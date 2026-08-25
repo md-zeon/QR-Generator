@@ -1,17 +1,18 @@
 import QRGenerator from '@/components/QRGenerator';
 import ThemeToggle from '@/components/ThemeToggle';
+import { Badge } from '@/components/ui/badge';
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#0A090F]">
+    <main className="min-h-screen">
       {/* Header */}
-      <header className="border-b border-zinc-800 bg-[#0A090F]/80 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <div className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500">
+      <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-white"
+                className="h-5 w-5 text-primary-foreground"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -24,12 +25,17 @@ export default function Home() {
                 />
               </svg>
             </div>
-            <h1 className="text-xl font-bold text-white">QR Generator</h1>
+            <div>
+              <h1 className="text-lg font-bold">QR Generator</h1>
+              <p className="hidden text-xs text-muted-foreground sm:block">
+                Fast, private, and free
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-3">
-            <p className="hidden text-sm text-zinc-500 sm:block">
-              Fast, private, and free. No data leaves your browser.
-            </p>
+            <Badge variant="secondary" className="hidden sm:inline-flex">
+              100% Client-Side
+            </Badge>
             <ThemeToggle />
           </div>
         </div>
@@ -39,11 +45,9 @@ export default function Home() {
       <QRGenerator />
 
       {/* Footer */}
-      <footer className="border-t border-zinc-800 py-6">
-        <div className="mx-auto max-w-6xl px-4 text-center text-sm text-zinc-600">
-          <p>
-            Built with Next.js • 100% client-side • No data collection
-          </p>
+      <footer className="border-t py-6">
+        <div className="mx-auto max-w-6xl px-4 text-center text-sm text-muted-foreground">
+          Built with Next.js &bull; No data collection &bull; Open Source
         </div>
       </footer>
     </main>

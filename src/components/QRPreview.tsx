@@ -2,6 +2,7 @@
 
 import { QRCodeSVG } from 'qrcode.react';
 import { QRConfig } from '@/types';
+import { Card } from '@/components/ui/card';
 
 interface QRPreviewProps {
   config: QRConfig;
@@ -12,10 +13,7 @@ export default function QRPreview({ config }: QRPreviewProps) {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div
-        className="relative flex items-center justify-center rounded-2xl bg-white p-8 shadow-lg"
-        style={{ minWidth: config.size + 64, minHeight: config.size + 64 }}
-      >
+      <Card className="relative flex items-center justify-center p-8">
         <QRCodeSVG
           value={config.content || ' '}
           size={config.size}
@@ -42,11 +40,11 @@ export default function QRPreview({ config }: QRPreviewProps) {
             />
           </div>
         )}
-      </div>
+      </Card>
 
-      <div className="text-center text-sm text-zinc-500">
+      <p className="text-sm text-muted-foreground">
         {config.size} × {config.size}px • EC: {config.errorCorrection}
-      </div>
+      </p>
     </div>
   );
 }

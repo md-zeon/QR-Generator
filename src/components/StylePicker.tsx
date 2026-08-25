@@ -1,7 +1,9 @@
 'use client';
 
-import { DotStyle, CornerStyle } from '@/types';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { DOT_STYLES, CORNER_STYLES } from '@/lib/constants';
+import { DotStyle, CornerStyle } from '@/types';
 
 interface StylePickerProps {
   dotStyle: DotStyle;
@@ -18,48 +20,40 @@ export default function StylePicker({
 }: StylePickerProps) {
   return (
     <div className="space-y-4">
-      {/* Dot Styles */}
-      <div>
-        <label className="mb-2 block text-sm font-medium text-zinc-300">Module Shape</label>
+      {/* Dot Style */}
+      <div className="space-y-2">
+        <Label>Dot Style</Label>
         <div className="grid grid-cols-4 gap-2">
           {DOT_STYLES.map((style) => (
-            <button
+            <Button
               key={style.value}
+              variant={dotStyle === style.value ? 'default' : 'outline'}
+              size="sm"
               onClick={() => onDotStyleChange(style.value)}
-              className={`flex flex-col items-center gap-1 rounded-lg border px-3 py-3 text-sm transition-all ${
-                dotStyle === style.value
-                  ? 'border-purple-500 bg-purple-500/10 text-purple-400'
-                  : 'border-zinc-700 bg-zinc-800 text-zinc-300 hover:border-zinc-500'
-              }`}
-              aria-label={`${style.label} style`}
-              aria-pressed={dotStyle === style.value}
+              className="flex-col gap-1 h-auto py-3"
             >
-              <span className="text-xl">{style.preview}</span>
+              <span className="text-lg">{style.preview}</span>
               <span className="text-xs">{style.label}</span>
-            </button>
+            </Button>
           ))}
         </div>
       </div>
 
-      {/* Corner Styles */}
-      <div>
-        <label className="mb-2 block text-sm font-medium text-zinc-300">Corner Style</label>
+      {/* Corner Style */}
+      <div className="space-y-2">
+        <Label>Corner Style</Label>
         <div className="grid grid-cols-3 gap-2">
           {CORNER_STYLES.map((style) => (
-            <button
+            <Button
               key={style.value}
+              variant={cornerStyle === style.value ? 'default' : 'outline'}
+              size="sm"
               onClick={() => onCornerStyleChange(style.value)}
-              className={`flex flex-col items-center gap-1 rounded-lg border px-3 py-3 text-sm transition-all ${
-                cornerStyle === style.value
-                  ? 'border-purple-500 bg-purple-500/10 text-purple-400'
-                  : 'border-zinc-700 bg-zinc-800 text-zinc-300 hover:border-zinc-500'
-              }`}
-              aria-label={`${style.label} corner style`}
-              aria-pressed={cornerStyle === style.value}
+              className="flex-col gap-1 h-auto py-3"
             >
-              <span className="text-xl">{style.preview}</span>
+              <span className="text-lg">{style.preview}</span>
               <span className="text-xs">{style.label}</span>
-            </button>
+            </Button>
           ))}
         </div>
       </div>

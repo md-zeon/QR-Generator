@@ -210,22 +210,22 @@ A modern, fast QR code generator with customization options. Paste any text or U
 - [x] Quiet zone (4-module margin for scannability)
 
 ### V1
-- [ ] Custom foreground/background colors
-- [ ] Download as SVG
-- [ ] QR size selector (256px, 512px, 1024px, 2048px)
-- [ ] Error correction level (L, M, Q, H)
-- [ ] Dark/light theme toggle
-- [ ] Input validation with error messages
-- [ ] Contrast ratio warning (< 4:1)
+- [x] Custom foreground/background colors
+- [x] Download as SVG
+- [x] QR size selector (256px, 512px, 1024px, 2048px)
+- [x] Error correction level (L, M, Q, H)
+- [x] Dark/light theme toggle
+- [x] Input validation with error messages
+- [x] Contrast ratio warning (< 4:1)
 
 ### V2
-- [ ] Logo/center image overlay (centered, ≤20% width, opaque background)
-- [ ] Dot shape styles (square, rounded, dots, diamond)
-- [ ] Corner/eye style customization
-- [ ] Gradient support (linear/radial)
-- [ ] Multiple QR types: WiFi, vCard, Email, SMS, Phone, Calendar, WhatsApp, Location
-- [ ] QR history (localStorage)
-- [ ] Style presets/templates
+- [x] Logo/center image overlay (centered, ≤20% width, opaque background)
+- [x] Dot shape styles (square, rounded, dots, diamond)
+- [x] Corner/eye style customization
+- [x] Gradient support (linear/radial)
+- [x] Multiple QR types: WiFi, vCard, Email, SMS, Phone, Calendar, WhatsApp, Location
+- [x] QR history (localStorage)
+- [x] Style presets/templates
 
 ### V3 (Optional)
 - [ ] QR scanner (camera integration)

@@ -1,5 +1,8 @@
 'use client';
 
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { QRType } from '@/types';
 
 interface QRInputProps {
@@ -10,13 +13,9 @@ interface QRInputProps {
 }
 
 export default function QRInput({ type, fields, onFieldChange, errors = {} }: QRInputProps) {
-  const renderFieldError = (field: string) => {
+  const renderError = (field: string) => {
     if (errors[field]) {
-      return (
-        <p className="mt-1 text-sm text-red-400" role="alert">
-          {errors[field]}
-        </p>
-      );
+      return <p className="text-xs text-destructive">{errors[field]}</p>;
     }
     return null;
   };
@@ -26,240 +25,247 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
       case 'url':
       case 'text':
         return (
-          <div>
-            <textarea
+          <div className="space-y-2">
+            <Label htmlFor="content">{type === 'url' ? 'URL' : 'Text'}</Label>
+            <Textarea
+              id="content"
               value={fields.content || ''}
               onChange={(e) => onFieldChange('content', e.target.value)}
               placeholder={type === 'url' ? 'https://example.com' : 'Enter your text here...'}
-              className={`h-32 w-full resize-none rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
-                errors.content ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
-              }`}
-              aria-label={type === 'url' ? 'URL' : 'Text content'}
+              className={errors.content ? 'border-destructive' : ''}
               aria-invalid={!!errors.content}
             />
-            {renderFieldError('content')}
+            {renderError('content')}
           </div>
         );
 
       case 'wifi':
         return (
           <div className="space-y-3">
-            <div>
-              <input
-                type="text"
+            <div className="space-y-2">
+              <Label htmlFor="ssid">Network Name (SSID)</Label>
+              <Input
+                id="ssid"
                 value={fields.ssid || ''}
                 onChange={(e) => onFieldChange('ssid', e.target.value)}
-                placeholder="Network name (SSID)"
-                className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
-                  errors.ssid ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
-                }`}
-                aria-label="WiFi network name"
+                placeholder="My WiFi Network"
+                className={errors.ssid ? 'border-destructive' : ''}
                 aria-invalid={!!errors.ssid}
               />
-              {renderFieldError('ssid')}
+              {renderError('ssid')}
             </div>
-            <input
-              type="text"
-              value={fields.password || ''}
-              onChange={(e) => onFieldChange('password', e.target.value)}
-              placeholder="Password"
-              className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="WiFi password"
-            />
-            <select
-              value={fields.encryption || 'WPA'}
-              onChange={(e) => onFieldChange('encryption', e.target.value)}
-              className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="WiFi encryption type"
-            >
-              <option value="WPA">WPA/WPA2</option>
-              <option value="WEP">WEP</option>
-              <option value="nopass">None</option>
-            </select>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="text"
+                value={fields.password || ''}
+                onChange={(e) => onFieldChange('password', e.target.value)}
+                placeholder="Enter password"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="encryption">Encryption</Label>
+              <select
+                id="encryption"
+                value={fields.encryption || 'WPA'}
+                onChange={(e) => onFieldChange('encryption', e.target.value)}
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              >
+                <option value="WPA">WPA/WPA2</option>
+                <option value="WEP">WEP</option>
+                <option value="nopass">None</option>
+              </select>
+            </div>
           </div>
         );
 
       case 'vcard':
         return (
           <div className="space-y-3">
-            <div>
-              <input
-                type="text"
+            <div className="space-y-2">
+              <Label htmlFor="name">Full Name</Label>
+              <Input
+                id="name"
                 value={fields.name || ''}
                 onChange={(e) => onFieldChange('name', e.target.value)}
-                placeholder="Full name"
-                className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
-                  errors.name ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
-                }`}
-                aria-label="Full name"
+                placeholder="John Doe"
+                className={errors.name ? 'border-destructive' : ''}
                 aria-invalid={!!errors.name}
               />
-              {renderFieldError('name')}
+              {renderError('name')}
             </div>
-            <input
-              type="tel"
-              value={fields.phone || ''}
-              onChange={(e) => onFieldChange('phone', e.target.value)}
-              placeholder="Phone number"
-              className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="Phone number"
-            />
-            <input
-              type="email"
-              value={fields.email || ''}
-              onChange={(e) => onFieldChange('email', e.target.value)}
-              placeholder="Email address"
-              className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="Email address"
-            />
-            <input
-              type="text"
-              value={fields.organization || ''}
-              onChange={(e) => onFieldChange('organization', e.target.value)}
-              placeholder="Organization (optional)"
-              className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="Organization"
-            />
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={fields.phone || ''}
+                onChange={(e) => onFieldChange('phone', e.target.value)}
+                placeholder="+1 234 567 8900"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={fields.email || ''}
+                onChange={(e) => onFieldChange('email', e.target.value)}
+                placeholder="john@example.com"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="organization">Organization</Label>
+              <Input
+                id="organization"
+                value={fields.organization || ''}
+                onChange={(e) => onFieldChange('organization', e.target.value)}
+                placeholder="Acme Inc. (optional)"
+              />
+            </div>
           </div>
         );
 
       case 'email':
         return (
           <div className="space-y-3">
-            <div>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor="to">To Email</Label>
+              <Input
+                id="to"
                 type="email"
                 value={fields.to || ''}
                 onChange={(e) => onFieldChange('to', e.target.value)}
-                placeholder="To email"
-                className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
-                  errors.to ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
-                }`}
-                aria-label="To email"
+                placeholder="recipient@example.com"
+                className={errors.to ? 'border-destructive' : ''}
                 aria-invalid={!!errors.to}
               />
-              {renderFieldError('to')}
+              {renderError('to')}
             </div>
-            <input
-              type="text"
-              value={fields.subject || ''}
-              onChange={(e) => onFieldChange('subject', e.target.value)}
-              placeholder="Subject (optional)"
-              className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="Email subject"
-            />
-            <textarea
-              value={fields.body || ''}
-              onChange={(e) => onFieldChange('body', e.target.value)}
-              placeholder="Message body (optional)"
-              className="h-24 w-full resize-none rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="Email body"
-            />
+            <div className="space-y-2">
+              <Label htmlFor="subject">Subject</Label>
+              <Input
+                id="subject"
+                value={fields.subject || ''}
+                onChange={(e) => onFieldChange('subject', e.target.value)}
+                placeholder="Email subject (optional)"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="body">Message Body</Label>
+              <Textarea
+                id="body"
+                value={fields.body || ''}
+                onChange={(e) => onFieldChange('body', e.target.value)}
+                placeholder="Your message (optional)"
+                className="min-h-[80px]"
+              />
+            </div>
           </div>
         );
 
       case 'sms':
         return (
           <div className="space-y-3">
-            <div>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor="number">Phone Number</Label>
+              <Input
+                id="number"
                 type="tel"
                 value={fields.number || ''}
                 onChange={(e) => onFieldChange('number', e.target.value)}
-                placeholder="Phone number"
-                className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
-                  errors.number ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
-                }`}
-                aria-label="Phone number"
+                placeholder="+1 234 567 8900"
+                className={errors.number ? 'border-destructive' : ''}
                 aria-invalid={!!errors.number}
               />
-              {renderFieldError('number')}
+              {renderError('number')}
             </div>
-            <textarea
-              value={fields.body || ''}
-              onChange={(e) => onFieldChange('body', e.target.value)}
-              placeholder="Message (optional)"
-              className="h-24 w-full resize-none rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="SMS message"
-            />
+            <div className="space-y-2">
+              <Label htmlFor="body">Message</Label>
+              <Textarea
+                id="body"
+                value={fields.body || ''}
+                onChange={(e) => onFieldChange('body', e.target.value)}
+                placeholder="Your message (optional)"
+                className="min-h-[80px]"
+              />
+            </div>
           </div>
         );
 
       case 'phone':
         return (
-          <div>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor="number">Phone Number</Label>
+            <Input
+              id="number"
               type="tel"
               value={fields.number || ''}
               onChange={(e) => onFieldChange('number', e.target.value)}
               placeholder="+1 234 567 8900"
-              className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
-                errors.number ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
-              }`}
-              aria-label="Phone number"
+              className={errors.number ? 'border-destructive' : ''}
               aria-invalid={!!errors.number}
             />
-            {renderFieldError('number')}
+            {renderError('number')}
           </div>
         );
 
       case 'whatsapp':
         return (
           <div className="space-y-3">
-            <div>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor="number">WhatsApp Number</Label>
+              <Input
+                id="number"
                 type="tel"
                 value={fields.number || ''}
                 onChange={(e) => onFieldChange('number', e.target.value)}
                 placeholder="+1 234 567 8900"
-                className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
-                  errors.number ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
-                }`}
-                aria-label="WhatsApp number"
+                className={errors.number ? 'border-destructive' : ''}
                 aria-invalid={!!errors.number}
               />
-              {renderFieldError('number')}
+              {renderError('number')}
             </div>
-            <textarea
-              value={fields.message || ''}
-              onChange={(e) => onFieldChange('message', e.target.value)}
-              placeholder="Message (optional)"
-              className="h-24 w-full resize-none rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="WhatsApp message"
-            />
+            <div className="space-y-2">
+              <Label htmlFor="message">Message</Label>
+              <Textarea
+                id="message"
+                value={fields.message || ''}
+                onChange={(e) => onFieldChange('message', e.target.value)}
+                placeholder="Your message (optional)"
+                className="min-h-[80px]"
+              />
+            </div>
           </div>
         );
 
       case 'location':
         return (
           <div className="space-y-3">
-            <div>
-              <input
-                type="text"
+            <div className="space-y-2">
+              <Label htmlFor="latitude">Latitude</Label>
+              <Input
+                id="latitude"
                 value={fields.latitude || ''}
                 onChange={(e) => onFieldChange('latitude', e.target.value)}
-                placeholder="Latitude (e.g., 40.7128)"
-                className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
-                  errors.latitude ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
-                }`}
-                aria-label="Latitude"
+                placeholder="e.g., 40.7128"
+                className={errors.latitude ? 'border-destructive' : ''}
                 aria-invalid={!!errors.latitude}
               />
-              {renderFieldError('latitude')}
+              {renderError('latitude')}
             </div>
-            <div>
-              <input
-                type="text"
+            <div className="space-y-2">
+              <Label htmlFor="longitude">Longitude</Label>
+              <Input
+                id="longitude"
                 value={fields.longitude || ''}
                 onChange={(e) => onFieldChange('longitude', e.target.value)}
-                placeholder="Longitude (e.g., -74.0060)"
-                className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
-                  errors.longitude ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
-                }`}
-                aria-label="Longitude"
+                placeholder="e.g., -74.0060"
+                className={errors.longitude ? 'border-destructive' : ''}
                 aria-invalid={!!errors.longitude}
               />
-              {renderFieldError('longitude')}
+              {renderError('longitude')}
             </div>
           </div>
         );
@@ -267,56 +273,51 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
       case 'calendar':
         return (
           <div className="space-y-3">
-            <div>
-              <input
-                type="text"
+            <div className="space-y-2">
+              <Label htmlFor="title">Event Title</Label>
+              <Input
+                id="title"
                 value={fields.title || ''}
                 onChange={(e) => onFieldChange('title', e.target.value)}
-                placeholder="Event title"
-                className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
-                  errors.title ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
-                }`}
-                aria-label="Event title"
+                placeholder="Team Meeting"
+                className={errors.title ? 'border-destructive' : ''}
                 aria-invalid={!!errors.title}
               />
-              {renderFieldError('title')}
+              {renderError('title')}
             </div>
-            <input
-              type="text"
-              value={fields.location || ''}
-              onChange={(e) => onFieldChange('location', e.target.value)}
-              placeholder="Location (optional)"
-              className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="Event location"
-            />
+            <div className="space-y-2">
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                value={fields.location || ''}
+                onChange={(e) => onFieldChange('location', e.target.value)}
+                placeholder="Conference Room A (optional)"
+              />
+            </div>
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="mb-1 block text-xs text-zinc-400">Start</label>
+              <div className="space-y-2">
+                <Label htmlFor="start">Start</Label>
                 <input
+                  id="start"
                   type="datetime-local"
                   value={fields.start || ''}
                   onChange={(e) => onFieldChange('start', e.target.value)}
-                  className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white transition-colors focus:outline-none ${
-                    errors.start ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
-                  }`}
-                  aria-label="Event start time"
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   aria-invalid={!!errors.start}
                 />
-                {renderFieldError('start')}
+                {renderError('start')}
               </div>
-              <div>
-                <label className="mb-1 block text-xs text-zinc-400">End</label>
+              <div className="space-y-2">
+                <Label htmlFor="end">End</Label>
                 <input
+                  id="end"
                   type="datetime-local"
                   value={fields.end || ''}
                   onChange={(e) => onFieldChange('end', e.target.value)}
-                  className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white transition-colors focus:outline-none ${
-                    errors.end ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
-                  }`}
-                  aria-label="Event end time"
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   aria-invalid={!!errors.end}
                 />
-                {renderFieldError('end')}
+                {renderError('end')}
               </div>
             </div>
           </div>

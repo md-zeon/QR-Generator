@@ -4,9 +4,10 @@ import { useMemo } from 'react';
 import { useQRConfig } from '@/hooks/useQRConfig';
 import { useExport } from '@/hooks/useExport';
 import { useToast } from '@/components/Toast';
-import ToastContainer from '@/components/Toast';
 import { useHistory } from '@/components/History';
-import HistoryPanel from '@/components/History';
+import { Toaster } from '@/components/ui/sonner';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import QRTypeSelector from './QRTypeSelector';
 import QRInput from './QRInput';
 import QRPreview from './QRPreview';
@@ -17,6 +18,7 @@ import StylePicker from './StylePicker';
 import StylePresets from './StylePresets';
 import LogoUploader from './LogoUploader';
 import DownloadButton from './DownloadButton';
+import HistoryPanel from './History';
 
 export default function QRGenerator() {
   const {
@@ -29,7 +31,7 @@ export default function QRGenerator() {
     handleLogoChange,
   } = useQRConfig();
 
-  const { toasts, addToast, removeToast } = useToast();
+  const { addToast } = useToast();
   const { qrRef, downloadPNG, downloadSVG, copyToClipboard } = useExport(config, addToast);
   const { history, addToHistory, removeFromHistory, clearHistory } = useHistory();
 
@@ -40,6 +42,11 @@ export default function QRGenerator() {
 
   const sections = useMemo(
     () => [
+      {
+        id: 'presets',
+        title: 'Presets',
+        content: <StylePresets onApply={handleConfigChange} />,
+      },
       {
         id: 'style',
         title: 'Style',
@@ -92,78 +99,39 @@ export default function QRGenerator() {
 
   return (
     <>
-      <ToastContainer toasts={toasts} onRemove={removeToast} />
+      <Toaster richColors position="bottom-right" />
 
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <div className="grid gap-8 lg:grid-cols-[1fr,auto]">
+        <div className="grid gap-6 lg:grid-cols-[1fr,auto]">
           {/* Left Column - Input & Options */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Type Selector */}
-            <section>
-              <QRTypeSelector value={config.type} onChange={handleTypeChange} />
-            </section>
+            <Card>
+              <CardContent className="pt-6">
+                <QRTypeSelector value={config.type} onChange={handleTypeChange} />
+              </CardContent>
+            </Card>
 
             {/* Input Fields */}
-            <section>
-              <QRInput
-                type={config.type}
-                fields={fields}
-                onFieldChange={handleFieldChange}
-                errors={errors}
-              />
-            </section>
+            <Card>
+              <CardContent className="pt-6">
+                <QRInput
+                  type={config.type}
+                  fields={fields}
+                  onFieldChange={handleFieldChange}
+                  errors={errors}
+                />
+              </CardContent>
+            </Card>
 
             {/* Customization Sections */}
-            {/* Presets */}
-            <details
-              open
-              className="group rounded-2xl border border-zinc-800 bg-zinc-900/50"
-            >
-              <summary className="flex cursor-pointer items-center justify-between px-4 py-3 font-medium text-white">
-                Presets
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-zinc-400 transition-transform group-open:rotate-180"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </summary>
-              <div className="border-t border-zinc-800 px-4 pb-4 pt-3">
-                <StylePresets onApply={handleConfigChange} />
-              </div>
-            </details>
-
             {sections.map((section) => (
-              <details
-                key={section.id}
-                open
-                className="group rounded-2xl border border-zinc-800 bg-zinc-900/50"
-              >
-                <summary className="flex cursor-pointer items-center justify-between px-4 py-3 font-medium text-white">
-                  {section.title}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-zinc-400 transition-transform group-open:rotate-180"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </summary>
-                <div className="border-t border-zinc-800 px-4 pb-4 pt-3">
-                  {section.content}
-                </div>
-              </details>
+              <Card key={section.id}>
+                <CardHeader>
+                  <CardTitle className="text-base">{section.title}</CardTitle>
+                </CardHeader>
+                <CardContent>{section.content}</CardContent>
+              </Card>
             ))}
 
             {/* History */}
@@ -179,29 +147,35 @@ export default function QRGenerator() {
           </div>
 
           {/* Right Column - Preview & Export */}
-          <div className="space-y-6 lg:sticky lg:top-8 lg:h-fit">
+          <div className="space-y-4 lg:sticky lg:top-8 lg:h-fit">
             {/* Preview */}
-            <section className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
-              <div ref={qrRef}>
-                {config.gradient.enabled ? (
-                  <QRPreviewStylized config={config} />
-                ) : (
-                  <QRPreview config={config} />
-                )}
-              </div>
-            </section>
+            <Card>
+              <CardContent className="pt-6">
+                <div ref={qrRef}>
+                  {config.gradient.enabled ? (
+                    <QRPreviewStylized config={config} />
+                  ) : (
+                    <QRPreview config={config} />
+                  )}
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Export */}
-            <section className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
-              <h3 className="mb-4 font-medium text-white">Export</h3>
-              <DownloadButton
-                config={config}
-                onConfigChange={handleConfigChange}
-                onDownloadPNG={() => handleExport(downloadPNG)}
-                onDownloadSVG={() => handleExport(downloadSVG)}
-                onCopy={() => handleExport(copyToClipboard)}
-              />
-            </section>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Export</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <DownloadButton
+                  config={config}
+                  onConfigChange={handleConfigChange}
+                  onDownloadPNG={() => handleExport(downloadPNG)}
+                  onDownloadSVG={() => handleExport(downloadSVG)}
+                  onCopy={() => handleExport(copyToClipboard)}
+                />
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
