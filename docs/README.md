@@ -1,6 +1,6 @@
 # QR Generator Documentation
 
-A modern, fast, privacy-first QR code generator built with Next.js. Generate styled QR codes instantly in your browser with no data leaving your device.
+A modern, fast, privacy-first QR code generator **and scanner** built with Next.js. Generate styled QR codes instantly in your browser with no data leaving your device.
 
 ## Documentation
 
@@ -15,7 +15,6 @@ A modern, fast, privacy-first QR code generator built with Next.js. Generate sty
 ## Quick Links
 
 - **Repository**: [github.com/md-zeon/QR-Generator](https://github.com/md-zeon/QR-Generator)
-- **Live Demo**: [your-app.vercel.app](https://your-app.vercel.app)
 - **Plan**: See [PLAN.md](../PLAN.md) for feature roadmap
 
 ## Tech Stack
@@ -23,5 +22,6 @@ A modern, fast, privacy-first QR code generator built with Next.js. Generate sty
 - **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS v4 + shadcn/ui
-- **QR Generation**: qrcode.react + qrcode + qr-code-styling
+- **QR Generation**: qrcode.react + qr-code-styling
+- **QR Scanning**: qr-scanner (nimiq)
 - **Deployment**: Vercel

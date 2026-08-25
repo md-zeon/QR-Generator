@@ -11,7 +11,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/qr-generator.git
+git clone https://github.com/md-zeon/QR-Generator.git
 cd qr-generator
 
 # Install dependencies
@@ -83,9 +83,9 @@ None required. This is a client-side only application.
 
 - [ ] Run `npm run build` without errors
 - [ ] Lighthouse score > 95 (Performance, Accessibility, Best Practices, SEO)
-- [ ] Bundle size < 100KB gzipped
 - [ ] No console errors in production
 - [ ] QR codes scan on iOS and Android
+- [ ] QR scanner works on mobile devices with camera
 
 ## Troubleshooting
 
@@ -103,6 +103,12 @@ npm run build
 - Check browser console for errors
 - Ensure JavaScript is enabled
 - Test with simple text first (e.g., "hello")
+
+### QR Scanner Not Working
+
+- Ensure camera permission is granted
+- Test on HTTPS (camera requires secure context)
+- Try image upload as fallback
 
 ### Slow Generation
 

@@ -4,69 +4,54 @@
 
 ```
 QRGenerator (orchestrator)
-├── QRTypeSelector (tab pattern)
+├── QRTypeSelector (3x3 visual grid)
 ├── QRInput (type-specific forms)
-├── QRPreview (live SVG rendering)
-│   └── QRCodeSVG (from qrcode.react)
+├── QRPreview (live SVG — qrcode.react)
+├── QRPreviewStylized (gradient — qr-code-styling)
+├── QRScanner (camera + image + clipboard)
 ├── ColorPicker (with contrast warning)
 ├── StylePicker (dot/corner styles)
+├── GradientPicker (linear/radial config)
+├── StylePresets (one-click themes)
 ├── LogoUploader (with preview)
 ├── DownloadButton (PNG/SVG/Copy)
-└── Toast (notification system)
+├── HistoryPanel (horizontal scroll)
+└── ThemeToggle (dark/light switch)
 ```
 
 ## Component Reference
 
 ### QRGenerator
 
-Main orchestrator component. Manages all QR state and passes it to child components.
+Main orchestrator component. Manages all QR state, top-level Generate/Scan tabs, and two-column workspace layout.
 
-```tsx
-// State managed by QRGenerator
-interface QRState {
-  content: string;
-  type: QRType;
-  foreground: string;
-  background: string;
-  size: number;
-  errorCorrection: 'L' | 'M' | 'Q' | 'H';
-  dotStyle: DotStyle;
-  cornerStyle: CornerStyle;
-  logo: File | null;
-  logoSize: number;
-}
-```
+**State hooks used:**
+- `useQRConfig()` — config, fields, errors, handlers
+- `useExport(config)` — downloadPNG, downloadSVG, copyToClipboard
+- `useHistory()` — history, addToHistory, removeFromHistory
 
-**Behavior:**
-- Uses `useReducer` for complex state transitions
-- Debounces input changes (150ms) before updating preview
-- Auto-adjusts error correction to H when logo is present
-- Validates contrast ratio on color changes
+**Layout:**
+- Desktop: Two-column grid (create left, sticky preview right)
+- Mobile: Preview first, then create, then design
+- Top-level: Generate / Scan tab bar
+- Design section: Segmented tabs (Presets, Colors, Style, Gradient, Logo)
 
 ### QRTypeSelector
 
-Tab-style selector for switching between QR types.
+3x3 visual grid picker for switching between QR types.
 
 **Props:**
 - `value: QRType` — Current type
 - `onChange: (type: QRType) => void` — Type change handler
 
 **Accessibility:**
-- Uses `role="tablist"` on container
-- Each tab has `role="tab"` and `aria-selected`
-- Arrow keys navigate between tabs
-- Tab panel has `role="tabpanel"`
+- `aria-pressed` on each button for selected state
+- Visual ring/border for active selection
 
-**Supported Types (V2):**
-- URL / Text
-- WiFi (SSID, password, encryption)
-- vCard (name, phone, email, org)
-- Email (address, subject, body)
-- SMS (number, message)
-- Phone (number)
-- Calendar Event (title, location, start/end)
-- WhatsApp (number, message)
-- Location (lat, lng)
+**Supported Types:**
+- URL, Text, WiFi
+- Contact/vCard, Email, SMS
+- Phone, WhatsApp, Location
 
 ### QRInput
 
@@ -74,51 +59,78 @@ Type-specific input forms for entering QR content.
 
 **Props:**
 - `type: QRType` — Current QR type (determines form fields)
-- `value: string` — Current input value
-- `onChange: (value: string) => void` — Change handler
-- `error?: string` — Validation error message
+- `fields: Record<string, string>` — Current field values
+- `onFieldChange: (field: string, value: string) => void` — Change handler
+- `errors: Record<string, string>` — Validation errors
 
 **Behavior:**
 - Renders different form fields based on QR type
 - Real-time validation with inline error display
-- Auto-normalizes URLs (adds https:// if missing)
-- Type-specific placeholders and help text
+- Type-specific descriptions, placeholders, and helper text
+- Auto-focus on first field when type changes
 
 **Type-Specific Forms:**
 | Type | Fields |
 |------|--------|
 | URL | Single text input |
+| Text | Textarea |
 | WiFi | SSID, Password, Encryption (WPA/WEP/None) |
 | vCard | Name, Phone, Email, Organization |
 | Email | Address, Subject, Body |
 | SMS | Phone Number, Message |
 | Phone | Phone Number |
-| Calendar | Title, Location, Start, End |
 | WhatsApp | Phone Number, Message |
 | Location | Latitude, Longitude |
 
 ### QRPreview
 
-Live QR code display with real-time updates.
+Live QR code display using `qrcode.react` (non-gradient).
 
 **Props:**
 - `config: QRConfig` — Full QR configuration object
 
 **Behavior:**
-- Renders SVG via `qrcode.react`
-- Updates on every state change (no debounce needed for SVG)
-- Shows quiet zone (4-module margin)
-- Loading state while generating
+- Renders SVG via `QRCodeSVG` from qrcode.react
+- Shows demo QR (`https://example.com`) when content is empty
 - Includes `aria-label` with QR content description
+- Logo overlay rendered as absolute-positioned div
 
-**Accessibility:**
-```tsx
-<QRCodeSVG
-  value={config.content}
-  aria-label={`QR code for: ${config.content}`}
-  title={`QR Code: ${config.content}`}
-/>
-```
+### QRPreviewStylized
+
+Gradient QR code display using `qr-code-styling`.
+
+**Props:**
+- `config: QRConfig` — Full QR configuration object
+
+**Behavior:**
+- Creates `QRCodeStyling` instance and appends to container via DOM
+- Supports gradients, dot shapes, corner styles, logo via image options
+- Shows demo QR when content is empty
+- Returns `null` when gradient is disabled (defers to QRPreview)
+
+### QRScanner
+
+QR code scanner with camera, image upload, and clipboard paste.
+
+**Features:**
+- Camera mode with viewfinder overlay and scan line animation
+- Image upload (drag & drop + file picker)
+- Clipboard paste (Ctrl+V)
+- Type-aware result detection (URL, WiFi, vCard, email, SMS, phone, location)
+- Action buttons per type (Open, Copy, Copy Password, etc.)
+- Privacy note about client-side processing
+
+**Detection Types:**
+| Type | Detection Pattern | Actions |
+|------|------------------|---------|
+| URL | `https?://` | Open Link, Copy |
+| WiFi | `WIFI:` | Copy Password, Copy SSID |
+| vCard | `BEGIN:VCARD` | Copy |
+| Email | `mailto:` | Open Email, Copy |
+| SMS | `sms:` | Open SMS, Copy |
+| Phone | `tel:` | Call, Copy |
+| Location | `geo:` | Open Maps, Copy |
+| Text | (fallback) | Copy |
 
 ### ColorPicker
 
@@ -131,22 +143,11 @@ Color selection with contrast ratio calculation.
 - `onBackgroundChange: (color: string) => void`
 
 **Features:**
-- Native color picker input
-- Real-time contrast ratio calculation
-- Visual warning when ratio < 4.5:1
-- "Swap" button to invert colors
-- Preset color combinations
-
-**Contrast Ratio Display:**
-```
-┌─────────────────────────────────────┐
-│  Foreground: [#1a1a1e]              │
-│  Background: [#ffffff]              │
-│                                     │
-│  Contrast Ratio: 12.5:1 ✅          │
-│  WCAG AA: Pass  |  WCAG AAA: Pass   │
-└─────────────────────────────────────┘
-```
+- Native color picker input with `aria-label`
+- Hex input field for precise values
+- Real-time contrast ratio calculation (AAA/AA/Fail)
+- Swap button to invert colors
+- 6 quick preset color combinations
 
 ### StylePicker
 
@@ -169,65 +170,116 @@ QR visual style customization.
 - `rounded` — Rounded outer corners
 - `dots` — Circular finder patterns
 
-**Accessibility:**
-- Each style option has visual preview + text label
-- Keyboard navigable with arrow keys
-- Current selection announced to screen readers
+### GradientPicker
+
+Gradient configuration for QR code colors.
+
+**Props:**
+- `gradient: GradientConfig` — Current gradient config
+- `onGradientChange: (gradient: GradientConfig) => void`
+
+**Features:**
+- Toggle switch to enable/disable gradient
+- Linear/Radial type selector
+- Two color pickers (Color 1, Color 2) with hex input
+- Rotation slider (0-360°) for linear gradients
+- Live gradient preview bar
+
+### StylePresets
+
+One-click theme presets for quick styling.
+
+**Props:**
+- `onApply: (updates: Partial<QRConfig>) => void`
+
+**Presets:**
+| Name | Style | Colors | Gradient |
+|------|-------|--------|----------|
+| Minimal | Square dots, square corners | Black/White | No |
+| Modern | Rounded dots, rounded corners | Navy/Light | No |
+| Playful | Dot dots, dot corners | Purple/White | No |
+| Bold | Diamond dots, square corners | Red/Light | No |
+| Neon | Rounded dots, rounded corners | Green/Dark | Linear |
+| Sunset | Dot dots, rounded corners | Red/Dark | Linear |
 
 ### LogoUploader
 
 Logo image upload and preview.
 
 **Props:**
-- `logo: File | null` — Current logo file
-- `logoSize: number` — Logo size (0-25% of QR width)
-- `onLogoChange: (file: File | null) => void`
+- `logo: string | null` — Current logo data URL
+- `logoSize: number` — Logo size percentage (5-30)
+- `onLogoChange: (logo: string | null) => void`
 - `onLogoSizeChange: (size: number) => void`
 
-**Constraints:**
-- Accepts: PNG, JPG, SVG
-- Max file size: 2MB
-- Recommended: ≤20% of QR width
+**Features:**
+- File upload with image type validation
+- Logo preview when uploaded
+- Size slider (5-30% of QR width)
+- Remove button
 - Auto-sets error correction to H when logo present
-
-**Logo Placement Rules:**
-1. Center only (never near corners)
-2. Opaque solid background (not transparent)
-3. ≤20% of QR width (25% absolute max)
-4. Error correction level H required
 
 ### DownloadButton
 
-Export QR code as PNG or SVG.
+Export QR code as PNG, SVG, or copy to clipboard.
 
 **Props:**
 - `config: QRConfig` — Full QR configuration
-- `filename?: string` — Download filename (default: "qr-code")
+- `onDownloadPNG: () => void`
+- `onDownloadSVG: () => void`
+- `onCopy: () => void`
 
 **Export Options:**
-- **PNG**: Renders to Canvas, exports as data URL
-- **SVG**: Generates SVG string, creates Blob for download
-- **Copy**: Copies SVG to clipboard
+- **PNG**: Uses `qr-code-styling`'s `getRawData('png')` directly
+- **SVG**: Uses `qr-code-styling`'s `getRawData('svg')` directly
+- **Copy**: Copies SVG markup to clipboard
 
-**Accessibility:**
-- Clear button labels ("Download PNG", "Download SVG", "Copy to Clipboard")
-- Loading state during export
-- Success toast after action
+**Additional Info:**
+- Settings summary showing size, error correction, color mode
+- Disabled when no content is entered
 
-### Toast
+### HistoryPanel
 
-Non-disruptive notification system.
+Horizontal scrollable history of recent QR codes.
 
 **Props:**
-- `message: string` — Toast message
-- `type: 'success' | 'error' | 'info'` — Toast type
-- `onClose: () => void` — Close handler
+- `history: HistoryItem[]` — List of saved QR configs
+- `onSelect: (config: QRConfig) => void` — Restore config
+- `onRemove: (id: string) => void` — Remove item
+- `onClear: () => void` — Clear all history
+
+**Features:**
+- Stored in localStorage
+- Maximum 10 items
+- Shows type label, content preview, and time ago
+- Horizontal scroll with hidden scrollbar
+- One-click restore to full config
+
+### ThemeToggle
+
+Dark/light mode toggle with system preference detection.
 
 **Behavior:**
+- Detects system preference via `prefers-color-scheme`
+- Manual toggle with localStorage persistence
+- SSR-safe mounting (avoids hydration mismatch)
+- Toggles `dark` class on `<html>` element
+
+### Toast (useToast)
+
+Toast notification hook using `sonner`.
+
+**Usage:**
+```typescript
+const { addToast } = useToast();
+addToast('QR code downloaded', 'success');
+addToast('Failed to generate', 'error');
+```
+
+**Features:**
 - Auto-dismiss after 3 seconds
-- Stacks multiple toasts
-- Accessible via `aria-live="polite"`
-- Animates in/out
+- Supports success, error, info types
+- Rich colors and icons
 
 ## Shared Types
 
@@ -240,8 +292,6 @@ type CornerStyle = 'square' | 'rounded' | 'dots';
 
 type ErrorCorrection = 'L' | 'M' | 'Q' | 'H';
 
-type ToastType = 'success' | 'error' | 'info';
-
 interface QRConfig {
   content: string;
   type: QRType;
@@ -251,77 +301,52 @@ interface QRConfig {
   errorCorrection: ErrorCorrection;
   dotStyle: DotStyle;
   cornerStyle: CornerStyle;
-  logo: string | null; // data URL
-  logoSize: number; // percentage (0-25)
+  logo: string | null;       // data URL
+  logoSize: number;          // percentage (5-30)
+  gradient: GradientConfig;
 }
 
-interface Toast {
-  id: string;
-  message: string;
-  type: ToastType;
+interface GradientConfig {
+  enabled: boolean;
+  type: 'linear' | 'radial';
+  color1: string;
+  color2: string;
+  rotation: number;          // degrees (0-360)
 }
 ```
+
+## UI Component Library (shadcn/ui)
+
+The project uses shadcn/ui components built on `@base-ui/react`:
+
+| Component | Used In |
+|-----------|---------|
+| Button | Throughout all components |
+| Input | QRInput, ColorPicker, GradientPicker |
+| Textarea | QRInput (text type) |
+| Label | ColorPicker, StylePicker, GradientPicker, LogoUploader |
+| Badge | ColorPicker (contrast display) |
+| Slider | GradientPicker (rotation), LogoUploader (size) |
+| Switch | GradientPicker (enable toggle) |
+| Tabs | QRGenerator (top-level + design section) |
+| Toaster | QRGenerator (toast container) |
+
+**Note:** The `@base-ui/react` Accordion does NOT accept a `type` prop. The Select component was replaced with native HTML `<select>` elements in DownloadButton and QRInput.
 
 ## Accessibility Checklist
 
 ### Keyboard Navigation
-- [ ] All interactive elements focusable
-- [ ] Tab order follows visual layout
-- [ ] Type selector navigable with arrow keys
-- [ ] Escape key closes dropdowns/modals
-- [ ] Enter/Space activates buttons
+- [x] All interactive elements focusable
+- [x] Tab order follows visual layout
+- [x] Enter/Space activates buttons
 
 ### Screen Readers
-- [ ] All images have alt text
-- [ ] Form fields have labels
-- [ ] Errors announced via `aria-live`
-- [ ] QR preview has descriptive `aria-label`
-- [ ] Status changes announced
+- [x] Color inputs have `aria-label` attributes
+- [x] QR type selector uses `aria-pressed`
+- [x] QR preview has descriptive `aria-label`
+- [x] Form errors announced when they appear
 
 ### Visual
-- [ ] Focus visible states on all controls
-- [ ] Minimum 4.5:1 contrast for text
-- [ ] Minimum 3:1 contrast for UI components
-- [ ] No information conveyed by color alone
-- [ ] Text resizable up to 200% without loss
-
-### Motion
-- [ ] Respects `prefers-reduced-motion`
-- [ ] No auto-playing animations
-- [ ] Animations can be disabled
-- [ ] No flashing content
-
-## Component Patterns
-
-### Controlled Components
-All form components use controlled pattern:
-```tsx
-interface ControlledInputProps {
-  value: string;
-  onChange: (value: string) => void;
-  label: string;
-  error?: string;
-}
-```
-
-### Compound Components
-Type selector uses compound pattern:
-```tsx
-<TypeSelector value={type} onChange={setType}>
-  <TypeSelector.Tab value="url">URL</TypeSelector.Tab>
-  <TypeSelector.Tab value="wifi">WiFi</TypeSelector.Tab>
-  {/* ... */}
-</TypeSelector>
-```
-
-### Render Props
-Preview uses render props for flexibility:
-```tsx
-<QRPreview config={config}>
-  {({ qrElement, isGenerating }) => (
-    <div className="preview-container">
-      {isGenerating ? <Spinner /> : qrElement}
-    </div>
-  )}
-</QRPreview>
-```
+- [x] Focus visible states on all controls
+- [x] Minimum 4.5:1 contrast for text
+- [x] No information conveyed by color alone

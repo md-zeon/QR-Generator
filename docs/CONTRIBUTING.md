@@ -53,9 +53,12 @@ type QRConfig = {
 - One component per file
 - Export as default from file
 - Co-locate styles with component
+- Use `'use client'` directive for client components
 
 ```tsx
 // Good: QRInput.tsx
+'use client';
+
 import { useState } from 'react';
 
 interface QRInputProps {
@@ -73,7 +76,7 @@ export default function QRInput({ value, onChange }: QRInputProps) {
 | Item | Convention | Example |
 |------|------------|---------|
 | Components | PascalCase | `QRPreview.tsx` |
-| Utilities | camelCase | `generateQR.ts` |
+| Utilities | camelCase | `qr-types.ts` |
 | Types | PascalCase | `QRConfig` |
 | Constants | UPPER_SNAKE | `DEFAULT_SIZE` |
 | CSS classes | kebab-case | `qr-preview` |
@@ -86,7 +89,9 @@ src/
 │   ├── ComponentName.tsx    # One component per file
 │   └── ui/                  # shadcn primitives (don't modify)
 ├── lib/
-│   └── utility.ts           # Helper functions
+│   └── utils.ts             # Helper functions
+├── hooks/
+│   └── useHookName.ts       # Custom hooks
 ├── types/
 │   └── index.ts             # Shared types
 └── app/
@@ -98,22 +103,24 @@ src/
 Use [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
-feat: add logo upload component
-fix: correct contrast ratio calculation
+feat: add QR scanner component
+fix: correct gradient export for qr-code-styling
 docs: update deployment guide
 style: format QRPreview.tsx
 refactor: extract QR generation logic
-test: add unit tests for qr-types
 chore: update dependencies
 ```
 
 ## Pull Request Process
 
 1. **Update documentation** if adding features
-2. **Add tests** for new functionality
-3. **Run linter** before submitting:
+2. **Run linter** before submitting:
    ```bash
    npm run lint
+   ```
+3. **Run build** to verify no type errors:
+   ```bash
+   npm run build
    ```
 4. **Keep PRs focused** — one feature/fix per PR
 5. **Write clear PR description** explaining changes
@@ -137,6 +144,15 @@ Always test generated QR codes:
 2. Android native camera
 3. At intended print size
 4. With multiple QR scanner apps
+
+### Testing QR Scanner
+
+Always test the scanner with:
+1. Camera mode on desktop and mobile
+2. Image upload (PNG, JPG)
+3. Clipboard paste
+4. Various QR code types (URL, WiFi, vCard)
+5. In both HTTP (dev) and HTTPS (production) contexts
 
 ## Bug Reports
 

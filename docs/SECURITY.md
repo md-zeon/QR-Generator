@@ -2,7 +2,7 @@
 
 ## Overview
 
-QR Generator is a fully client-side application. All processing happens in the browser — no data is sent to any server. This provides inherent privacy and security benefits.
+QR Generator is a fully client-side application with both QR generation and scanning capabilities. All processing happens in the browser — no data is sent to any server.
 
 ## Data Privacy
 
@@ -17,6 +17,7 @@ QR Generator is a fully client-side application. All processing happens in the b
 - All QR code content you enter
 - Logo images you upload
 - Generated QR code data
+- Scanned QR code data
 - Your style preferences (localStorage)
 
 ## Input Safety
@@ -27,10 +28,14 @@ QR Generator is a fully client-side application. All processing happens in the b
 - SVG output is sanitized before rendering
 - No `eval()` or dynamic code execution
 
+### URL Validation
+- External links validated before opening
+- Only `http:`, `https:`, `mailto:`, `tel:`, `sms:`, `geo:` protocols allowed
+- `javascript:` and other dangerous URIs blocked
+
 ### File Upload Safety
 - Logo uploads processed client-side only
-- File type validation (PNG, JPG, SVG only)
-- File size limit (2MB max)
+- File type validation (image/*)
 - No file upload to servers
 - Files read via FileReader API (not executed)
 
@@ -56,16 +61,17 @@ QR Generator is a fully client-side application. All processing happens in the b
 ### Content Security Policy
 Recommended CSP headers for deployment:
 ```
-Content-Security-Policy: 
-  default-src 'self'; 
-  script-src 'self'; 
-  style-src 'self' 'unsafe-inline'; 
-  img-src 'self' data: blob:; 
+Content-Security-Policy:
+  default-src 'self';
+  script-src 'self';
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: blob:;
   connect-src 'none';
 ```
 
 ### Permissions
-- No camera access required (unless QR scanner added)
+- Camera access required only when using QR scanner feature
+- Camera feed stays on-device (no streaming to servers)
 - No microphone access
 - No location access
 - No notification permissions
@@ -74,6 +80,7 @@ Content-Security-Policy:
 
 ### No External APIs
 - All QR generation is client-side
+- All QR scanning is client-side
 - No third-party API calls at runtime
 - No CDN dependencies after initial load
 - No analytics or tracking scripts
@@ -91,7 +98,6 @@ If future features require external APIs:
 ### What's Stored
 - Theme preference (dark/light)
 - Recent QR history (optional)
-- User style preferences
 
 ### Security Measures
 - No sensitive data in localStorage
@@ -99,13 +105,32 @@ If future features require external APIs:
 - User can clear data via browser settings
 - No third-party access to localStorage
 
+## Clipboard Security
+
+### Clipboard API Usage
+- Clipboard API called only on explicit user action
+- Fallback to `document.execCommand('copy')` for non-secure contexts
+- No silent clipboard access
+
+## QR Scanner Security
+
+### Camera Access
+- Camera permission requested only when user clicks "Enable Camera"
+- Camera feed processed entirely on-device
+- No images or video sent to any server
+- Camera stream stopped when scanner is closed or tab is switched
+
+### Image Scanning
+- Images processed entirely in-browser
+- No image data uploaded or stored
+- QR decode happens via Web Workers on-device
+
 ## Accessibility Security
 
 ### Keyboard Navigation
 - All interactive elements keyboard accessible
 - No keyboard traps
 - Focus visible on all controls
-- Escape key closes modals
 
 ### Screen Reader Security
 - ARIA labels on all interactive elements
@@ -119,7 +144,6 @@ If future features require external APIs:
 - Enable HTTPS only
 - Set security headers
 - Enable HSTS
-- Disable X-Frame-Options
 
 ### Environment Variables
 - No secrets in client-side code
@@ -150,6 +174,7 @@ We will respond within 48 hours and work with you to resolve the issue.
 - [ ] HTTPS enabled
 - [ ] Security headers configured
 - [ ] No external API calls
+- [ ] URL validation before opening external links
 
 ### For Contributors
 - [ ] Never commit secrets or API keys

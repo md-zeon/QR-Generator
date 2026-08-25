@@ -2,7 +2,7 @@
 
 ## Overview
 
-QR Generator is a fully client-side application. All QR code generation happens in the browser — no data is sent to any server. This ensures privacy and enables offline functionality.
+QR Generator is a fully client-side application with both QR generation and scanning capabilities. All processing happens in the browser — no data is sent to any server. This ensures privacy and enables offline functionality.
 
 ## System Diagram
 
@@ -18,31 +18,36 @@ QR Generator is a fully client-side application. All QR code generation happens 
 │  │   specific  │    │  │  (React SVG component)            │  │ │
 │  │   forms)    │    │  └───────────────────────────────────┘  │ │
 │  └─────────────┘    │  ┌───────────────────────────────────┐  │ │
-│                     │  │  qrcode (matrix generation)        │  │ │
-│  ┌─────────────┐    │  └───────────────────────────────────┘  │ │
-│  │   Style     │───>│  ┌───────────────────────────────────┐  │ │
-│  │  Component  │    │  │  qr-code-styling                   │  │ │
-│  │  (Colors,   │    │  │  (dot shapes, corners, gradients)  │  │ │
-│  │   dots,     │    │  └───────────────────────────────────┘  │ │
-│  │   corners)  │    └─────────────────────────────────────────┘ │
+│                     │  │  qr-code-styling                   │  │ │
+│  ┌─────────────┐    │  │  (dot shapes, corners, gradients)  │  │ │
+│  │   Style     │───>│  └───────────────────────────────────┘  │ │
+│  │  Components │    └─────────────────────────────────────────┘ │
 │  └─────────────┘                                                │
 │                     ┌─────────────────────────────────────────┐ │
-│  ┌─────────────┐    │           State Management              │ │
-│  │   Logo      │───>│  ┌───────────────────────────────────┐  │ │
-│  │  Upload     │    │  │  React useState + useReducer       │  │ │
-│  │  (File API) │    │  │  (no external state library)       │  │ │
-│  └─────────────┘    │  └───────────────────────────────────┘  │ │
-│                     └─────────────────────────────────────────┘ │
+│  ┌─────────────┐    │           QR Scanner Engine             │ │
+│  │   QR        │    │  ┌───────────────────────────────────┐  │ │
+│  │  Scanner    │───>│  │  qr-scanner (nimiq)               │  │ │
+│  │  (Camera/   │    │  │  Camera + Image + Clipboard        │  │ │
+│  │   Upload)   │    │  └───────────────────────────────────┘  │ │
+│  └─────────────┘    └─────────────────────────────────────────┘ │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │           State Management (useQRConfig)                │    │
+│  │  ┌───────────────────────────────────┐                  │    │
+│  │  │  React useState + useCallback     │                  │    │
+│  │  │  (no external state library)      │                  │    │
+│  │  └───────────────────────────────────┘                  │    │
+│  └─────────────────────────────────────────────────────────┘    │
 │                                                                 │
 │  ┌─────────────────────────────────────────────────────────┐    │
 │  │                    QR Preview                            │    │
-│  │           (Real-time SVG rendering)                      │    │
-│  │           (Debounced input updates)                      │    │
+│  │  QRPreview (qrcode.react)  │  QRPreviewStylized         │    │
+│  │  (non-gradient SVG)        │  (qr-code-styling canvas)  │    │
 │  └─────────────────────────────────────────────────────────┘    │
 │                                                                 │
 │  ┌─────────────────────────────────────────────────────────┐    │
 │  │                   Export Engine                          │    │
-│  │  PNG (Canvas)  │  SVG (Blob)  │  Copy (Clipboard API)   │    │
+│  │  PNG (qr-code-styling)  │  SVG  │  Copy (Clipboard API) │    │
 │  └─────────────────────────────────────────────────────────┘    │
 │                                                                 │
 │  ┌─────────────────────────────────────────────────────────┐    │
@@ -55,35 +60,44 @@ QR Generator is a fully client-side application. All QR code generation happens 
 
 ## Data Flow
 
+### Generation
 ```
 User Input ──> Input Parser ──> Validation ──> QR Config ──> Matrix Generator ──> Style Renderer ──> Preview
-                                                                                              │
-                                                                                              v
-                                                                                       Export (PNG/SVG/Copy)
+                                                                                               │
+                                                                                               v
+                                                                                        Export (PNG/SVG/Copy)
 ```
 
 1. **Input**: User enters text/URL or fills type-specific form (WiFi, vCard, etc.)
 2. **Parsing**: Input is validated and formatted according to QR type
 3. **Validation**: Check contrast ratio, input length, required fields
 4. **Config**: QRConfig object is assembled with all parameters
-5. **Matrix**: QR code matrix is generated using `qrcode` library
-6. **Styling**: Matrix is styled with colors, dot shapes, corners via `qr-code-styling`
-7. **Preview**: Styled QR is rendered as SVG in React component tree
-8. **Export**: User downloads as PNG (via Canvas), SVG (Blob), or copies to clipboard
+5. **Matrix**: QR code matrix is generated using `qrcode.react` (SVG) or `qr-code-styling` (gradient)
+6. **Preview**: Live QR is rendered in React component tree
+7. **Export**: User downloads as PNG/SVG or copies to clipboard
+
+### Scanning
+```
+Camera/Image ──> qr-scanner ──> Type Detection ──> Action Buttons
+```
+
+1. **Capture**: Camera feed, image file, or clipboard paste
+2. **Decode**: `qr-scanner` library decodes QR data
+3. **Detect**: Type-aware regex matching identifies content type (URL, WiFi, vCard, etc.)
+4. **Act**: Context-aware action buttons (Open, Copy, Copy Password, etc.)
 
 ## State Management
 
 ### Why No External State Library
 - App state is simple and local to one page
-- React's built-in hooks (`useState`, `useReducer`, `useCallback`) are sufficient
+- React's built-in hooks (`useState`, `useCallback`) are sufficient
 - Avoids bundle size overhead of Redux/Zustand
 - State is not shared across routes
 
 ### State Structure
 
 ```typescript
-interface QRState {
-  // Content
+interface QRConfig {
   content: string;
   type: QRType;
 
@@ -99,11 +113,10 @@ interface QRState {
 
   // Logo
   logo: string | null; // data URL after FileReader
-  logoSize: number; // percentage (0-25)
+  logoSize: number; // percentage (5-30)
 
-  // UI state
-  isGenerating: boolean;
-  error: string | null;
+  // Gradient
+  gradient: GradientConfig;
 }
 ```
 
@@ -113,7 +126,9 @@ interface QRState {
 ┌─────────────────────────────────────────────────────────────┐
 │                     QRGenerator                              │
 │  ┌───────────────────────────────────────────────────────┐  │
-│  │  useState<QRState>({...defaults})                     │  │
+│  │  useQRConfig() → config, fields, errors               │  │
+│  │  useExport(config) → downloadPNG, downloadSVG, copy    │  │
+│  │  useHistory() → history, addToHistory                  │  │
 │  │                                                       │  │
 │  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐   │  │
 │  │  │  QRInput    │  │ QRPreview   │  │ ColorPicker  │   │  │
@@ -123,7 +138,8 @@ interface QRState {
 │  │  └─────────────┘  └─────────────┘  └─────────────┘   │  │
 │  │                                                       │  │
 │  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐   │  │
-│  │  │ StylePicker │  │LogoUploader │  │DownloadBtn   │   │  │
+│  │  │StylePicker  │  │LogoUploader │  │DownloadBtn   │   │  │
+│  │  │GradientPick │  │StylePresets │  │HistoryPanel  │   │  │
 │  │  └─────────────┘  └─────────────┘  └─────────────┘   │  │
 │  └───────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
@@ -140,40 +156,57 @@ interface QRState {
 ### Library Selection
 | Library | Purpose | Why |
 |---------|---------|-----|
-| `qrcode.react` | React SVG rendering | Zero deps, 5.9KB, native JSX integration |
-| `qrcode` | Matrix generation | Battle-tested, 22M+ weekly downloads |
-| `qr-code-styling` | Visual customization | Dot shapes, corners, gradients, logo support |
+| `qrcode.react` | React SVG rendering | Zero deps, native JSX integration |
+| `qr-code-styling` | Visual customization + export | Dot shapes, corners, gradients, logos, direct PNG/SVG export |
+| `qr-scanner` | QR code scanning | ~16KB gzipped, camera + image + clipboard support |
+| `sonner` | Toast notifications | Lightweight, accessible, animated |
+
+### Dual Preview System
+- `QRPreview` uses `qrcode.react` for fast SVG rendering (non-gradient)
+- `QRPreviewStylized` uses `qr-code-styling` for gradient support
+- Switching based on `config.gradient.enabled`
+
+### Export via qr-code-styling
+- Exports use `qr-code-styling`'s `getRawData()` directly
+- Handles Buffer→Blob conversion with `new Uint8Array(data)`
+- Works for both gradient and non-gradient QR codes
 
 ### Styling Architecture
 - Tailwind CSS v4 for utility classes
-- shadcn/ui for accessible base components
-- CSS custom properties for theme colors
-- Dark/light mode via class strategy
+- shadcn/ui (via `@base-ui/react`) for accessible base components
+- oklch color tokens for theme consistency
+- Dark/light mode via class strategy with system preference detection
 
 ## File Structure
 
 ```
 src/
 ├── app/
-│   ├── page.tsx              # Main page (server component shell)
+│   ├── page.tsx              # Main page with header
 │   ├── layout.tsx            # Root layout with providers
-│   └── globals.css           # Tailwind imports + custom properties
+│   └── globals.css           # Tailwind imports + theme tokens
 ├── components/
-│   ├── QRGenerator.tsx       # Main orchestrator component
-│   ├── QRInput.tsx           # Text/URL input with validation
-│   ├── QRTypeSelector.tsx    # QR type switcher
-│   ├── QRPreview.tsx         # Live QR display
-│   ├── ColorPicker.tsx       # Foreground/background colors
-│   ├── StylePicker.tsx       # Dot shape, corner style
+│   ├── QRGenerator.tsx       # Main orchestrator (Generate/Scan tabs)
+│   ├── QRInput.tsx           # Type-specific input forms
+│   ├── QRTypeSelector.tsx    # 3x3 visual grid picker
+│   ├── QRPreview.tsx         # Live QR display (qrcode.react)
+│   ├── QRPreviewStylized.tsx # Gradient QR display (qr-code-styling)
+│   ├── QRScanner.tsx         # Camera + image + clipboard scanner
+│   ├── ColorPicker.tsx       # Colors + contrast ratio
+│   ├── StylePicker.tsx       # Dot/corner style grid
+│   ├── GradientPicker.tsx    # Gradient config (linear/radial)
+│   ├── StylePresets.tsx      # One-click theme presets
 │   ├── LogoUploader.tsx      # Logo upload with preview
-│   ├── DownloadButton.tsx    # Export options
-│   ├── Toast.tsx             # Notification component
-│   └── ui/                   # shadcn/ui primitives
+│   ├── DownloadButton.tsx    # Export options (PNG/SVG/Copy)
+│   ├── History.tsx           # Horizontal scroll history
+│   ├── ThemeToggle.tsx       # Dark/light mode switch
+│   ├── Toast.tsx             # Toast notification hook
+│   └── ui/                   # shadcn/ui components
 ├── lib/
-│   ├── generateQR.ts         # QR generation logic
-│   ├── qr-types.ts           # QR type definitions & formatters
-│   ├── constants.ts          # Defaults, color palette
-│   └── contrast.ts           # WCAG contrast ratio calculation
+│   ├── qr-types.ts           # QR type formatters & initial fields
+│   ├── constants.ts          # Defaults, presets, options
+│   ├── contrast.ts           # WCAG contrast calculation
+│   └── utils.ts              # cn() utility
 ├── hooks/
 │   ├── useQRConfig.ts        # QR state management hook
 │   └── useExport.ts          # Export logic hook
@@ -185,9 +218,8 @@ src/
 
 - QR generation is synchronous and fast (< 10ms typical)
 - SVG rendering is declarative via React (no manual DOM manipulation)
-- Debounced input (150ms) prevents excessive re-renders during typing
-- PNG export uses OffscreenCanvas when available
-- Bundle size target: < 50KB gzipped total
+- Export uses `qr-code-styling`'s `getRawData()` for direct binary output
+- Bundle size kept small by avoiding unnecessary dependencies
 
 ### Performance Targets
 | Metric | Target | Why |
@@ -196,7 +228,6 @@ src/
 | INP | < 200ms | Core Web Vital for interaction |
 | CLS | < 0.1 | Core Web Vital for visual stability |
 | QR Generation | < 100ms | User perception of "instant" |
-| Bundle Size | < 50KB gzipped | Fast initial load |
 
 ## Accessibility
 
@@ -205,19 +236,18 @@ src/
 - Minimum contrast ratio 3:1 for UI components
 - All interactive elements keyboard accessible
 - Focus visible states on all controls
-- ARIA labels on non-text elements
+- ARIA labels on color inputs and QR type selector
 
 ### Screen Reader Support
 - QR preview includes `aria-label` describing the QR content
-- Status announcements via `aria-live="polite"`
+- QR type selector uses `aria-pressed` for selected state
+- Color inputs have `aria-label` attributes
 - Form errors announced when they appear
-- Type selector has proper `role="tablist"` pattern
 
 ### Keyboard Navigation
 - Tab order follows visual layout
-- Type selector navigable with arrow keys
-- Escape key closes modals/dropdowns
 - Enter/Space activates buttons
+- Color pickers accessible via keyboard
 
 ## Security
 
@@ -225,27 +255,26 @@ src/
 - No external API calls at runtime
 - No user data collection or analytics
 - Logo images processed locally (FileReader API)
-- No cookies or tracking
+- QR history stored in localStorage only
 
 ### Input Safety
 - User input is never inserted via `innerHTML`
 - All dynamic content is properly escaped
-- SVG output is sanitized before rendering
 - No eval() or dynamic code execution
+- URL validation before opening external links
 
 ### File Handling
 - Logo uploads processed client-side only
-- File type validation (PNG, JPG, SVG only)
-- File size limit (2MB max)
+- File type validation (image/*)
 - No file upload to servers
 
 ## Offline Support
 
 ### Current
 - App works offline after initial load (static assets cached by browser)
-- All QR generation is client-side (no network required)
+- All QR generation and scanning is client-side (no network required)
 
-### Future (V3)
+### Future
 - Service worker for offline caching
 - PWA manifest for installability
 - Cache-first strategy for static assets

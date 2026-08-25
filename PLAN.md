@@ -1,7 +1,7 @@
 # QR Generator — Implementation Plan
 
 ## Overview
-A modern, fast QR code generator with customization options. Paste any text or URL, generate a QR code instantly, customize colors, styles, and download as PNG/SVG. Fully client-side, privacy-first, no data leaves the browser.
+A modern, fast QR code generator **and scanner** with customization options. Paste any text or URL, generate a QR code instantly, customize colors, styles, and download as PNG/SVG. Scan QR codes via camera or image upload. Fully client-side, privacy-first, no data leaves the browser.
 
 ---
 
@@ -35,148 +35,91 @@ A modern, fast QR code generator with customization options. Paste any text or U
 ### Design Principles
 
 1. **Mobile-First** — Design for 375px viewport first, scale up
-2. **Instant Feedback** — QR updates as user types (debounced 150ms)
+2. **Instant Feedback** — QR updates as user types
 3. **Progressive Disclosure** — Show basic options first, advanced in expandable sections
 4. **Error Prevention** — Validate input before generation, warn about scannability
 5. **Accessibility** — WCAG 2.1 AA compliant, keyboard navigable
 
-### Layout (Desktop)
+### Layout (Desktop — QR Studio Workspace)
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  QR Generator                                    [🌙/☀️]    │
+│  QR Studio                                    [🌙/☀️]       │
 │  ═══════════════════════════════════════════════════════════ │
+│  [Generate]  [Scan]                                         │
+├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  ┌─────────────────────────────┐  ┌───────────────────────┐ │
-│  │  QR Type                    │  │                       │ │
-│  │  [URL] [WiFi] [vCard] ...  │  │                       │ │
-│  ├─────────────────────────────┤  │      QR Preview       │ │
+│  │  Create                     │  │  Preview              │ │
 │  │                             │  │                       │ │
-│  │  Input Fields               │  │    (Real-time SVG)    │ │
-│  │  (Type-specific forms)      │  │                       │ │
-│  │                             │  │                       │ │
-│  │  ┌─────────────────────┐   │  │                       │ │
-│  │  │ https://example.com │   │  │                       │ │
-│  │  └─────────────────────┘   │  │                       │ │
-│  │                             │  │                       │ │
-│  ├─────────────────────────────┤  ├───────────────────────┤ │
-│  │  Style                     │  │  Export                │ │
-│  │  ┌─────┐ ┌─────┐ ┌─────┐  │  │  Size: [256][512][1K] │ │
-│  │  │ ⬛  │ │ ◼️  │ │ ●  │  │  │  ┌──────────────────┐ │ │
-│  │  │dot1 │ │dot2 │ │dot3 │  │  │  │  Download PNG    │ │ │
-│  │  └─────┘ └─────┘ └─────┘  │  │  └──────────────────┘ │ │
-│  │                             │  │  ┌──────────────────┐ │ │
-│  │  Colors                     │  │  │  Download SVG    │ │ │
-│  │  FG: [■] BG: [□] [🔄]     │  │  └──────────────────┘ │ │
-│  │  Contrast: 12.5:1 ✅        │  │  ┌──────────────────┐ │ │
-│  │                             │  │  │  Copy to Clipboard│ │ │
-│  │  Logo Upload                │  │  └──────────────────┘ │ │
-│  │  [Choose File] ≤20%         │  │                       │ │
+│  │  ┌───────────────────────┐  │  │  ┌─────────────────┐ │ │
+│  │  │ QR Type Grid (3x3)   │  │  │  │                 │ │ │
+│  │  │ [URL] [Text] [WiFi]  │  │  │  │   Live QR Code  │ │ │
+│  │  │ [Contact] [Email]... │  │  │  │   (SVG/Canvas)  │ │ │
+│  │  └───────────────────────┘  │  │  │                 │ │ │
+│  │                             │  │  └─────────────────┘ │ │
+│  │  ┌───────────────────────┐  │  │                       │ │
+│  │  │ Input Fields          │  │  │  [Download PNG]       │ │
+│  │  │ (Type-specific forms) │  │  │  [SVG] [Copy]        │ │
+│  │  └───────────────────────┘  │  │                       │ │
 │  │                             │  │                       │ │
 │  └─────────────────────────────┘  └───────────────────────┘ │
 │                                                             │
+├─────────────────────────────────────────────────────────────┤
+│  Design                                                     │
+│  [✨ Presets] [🎨 Colors] [◼ Style] [🌈 Gradient] [◉ Logo] │
+│  ┌─────────────────────────────────────────────────────────┐│
+│  │  (Tab content for selected design option)              ││
+│  └─────────────────────────────────────────────────────────┘│
+│                                                             │
+├─────────────────────────────────────────────────────────────┤
+│  Recent                                                     │
+│  [QR1] [QR2] [QR3] [QR4] ←→ (horizontal scroll)           │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Layout (Mobile - 375px)
+### Layout (Mobile — QR Studio Workspace)
 ```
 ┌───────────────────────────┐
-│  QR Generator      [🌙]   │
-│  ══════════════════════════ │
-│                             │
-│  ┌───────────────────────┐ │
-│  │   QR Preview          │ │
-│  │   (Sticky on scroll)  │ │
-│  └───────────────────────┘ │
-│                             │
-│  [URL][WiFi][vCard] ←→     │
-│                             │
-│  ┌───────────────────────┐ │
-│  │  https://example.com  │ │
-│  └───────────────────────┘ │
-│                             │
-│  ┌───────────────────────┐ │
-│  │  Style Options  [▼]   │ │
-│  ├───────────────────────┤ │
-│  │  Colors        [▼]   │ │
-│  ├───────────────────────┤ │
-│  │  Logo Upload   [▼]   │ │
-│  └───────────────────────┘ │
-│                             │
-│  ┌───────────────────────┐ │
-│  │     Download PNG      │ │
-│  └───────────────────────┘ │
-│  ┌───────────────────────┐ │
-│  │     Download SVG      │ │
-│  └───────────────────────┘ │
-│  ┌───────────────────────┐ │
-│  │   Copy to Clipboard   │ │
-│  └───────────────────────┘ │
-│                             │
+│  QR Studio      [🌙]     │
+│  ══════════════════════════│
+│  [Generate]  [Scan]       │
+├───────────────────────────┤
+│                           │
+│  ┌───────────────────────┐│
+│  │   QR Preview          ││
+│  │   (Above the fold)    ││
+│  └───────────────────────┘│
+│  ┌───────────────────────┐│
+│  │   Download Buttons    ││
+│  └───────────────────────┘│
+│                           │
+│  QR Type Grid (3x3)      │
+│                           │
+│  ┌───────────────────────┐│
+│  │  Input Fields         ││
+│  └───────────────────────┘│
+│                           │
+│  Design Tabs              │
+│  [Presets][Colors][Style] │
+│  [Gradient][Logo]         │
+│                           │
 └───────────────────────────┘
 ```
 
-### Color Palette
-- Background: `#0A090F` (dark)
-- Primary: `#5542FF` (purple accent)
-- Text: `#EFEFE6` (off-white)
-- Cards: `#1A1A1E` (dark gray)
-- Success: `#22C55E` (green for valid contrast)
-- Warning: `#F59E0B` (amber for low contrast)
-- Error: `#EF4444` (red for errors)
-
 ### Key Components
-- `QRTypeSelector` — horizontal scrollable tabs (mobile-friendly)
-- `QRInput` — type-specific form fields with validation
-- `QRPreview` — live QR display with sticky positioning
-- `ColorPicker` — foreground/background with contrast ratio display
-- `StylePicker` — visual dot/corner style grid
-- `LogoUploader` — drag-and-drop with preview
-- `DownloadButton` — size selector + export options
-- `Toast` — non-disruptive notifications
-
-### Interaction Patterns
-
-#### Real-Time Preview
-- QR updates as user types (debounced 150ms)
-- No "Generate" button needed
-- Visual feedback during generation (spinner)
-
-#### Input Validation
-- Inline error messages below fields
-- Real-time validation as user types
-- URL auto-normalization (adds https://)
-- Contrast ratio warning when < 4.5:1
-
-#### Type Switching
-- Smooth transition between QR types
-- Preserve style settings across type changes
-- Type-specific help text and placeholders
-
-#### Export Flow
-- Click download → instant download
-- Toast notification on success
-- Filename based on content type (e.g., "wifi-qr.png")
-
-### Responsive Behavior
-
-| Breakpoint | Layout Changes |
-|------------|----------------|
-| < 640px | Single column, sticky preview, collapsible sections |
-| 640-1024px | Two columns, preview on right |
-| > 1024px | Full two-column layout, all sections visible |
-
-### Micro-Interactions
-- Hover effects on buttons (subtle scale/color change)
-- Focus ring visible on all interactive elements
-- Smooth accordion animations for sections
-- QR preview fade-in on first render
-- Toast slide-in animation
-
-### Dark/Light Theme
-- System preference detection via `prefers-color-scheme`
-- Manual toggle with localStorage persistence
-- Smooth transition between themes (200ms)
-- QR preview adjusts to theme (dark QR on light bg, vice versa)
+- `QRTypeSelector` — 3x3 visual grid picker with type descriptions
+- `QRInput` — Type-specific form fields with validation
+- `QRPreview` — Live QR display (qrcode.react for non-gradient)
+- `QRPreviewStylized` — Gradient QR display (qr-code-styling)
+- `QRScanner` — Camera + image upload + clipboard paste scanner
+- `ColorPicker` — Foreground/background with contrast ratio display
+- `StylePicker` — Visual dot/corner style grid
+- `GradientPicker` — Linear/radial gradient with color pickers
+- `StylePresets` — One-click theme presets
+- `LogoUploader` — File upload with preview
+- `DownloadButton` — PNG/SVG/Copy export options
+- `HistoryPanel` — Horizontal scroll recent QR codes
+- `ThemeToggle` — Dark/light mode switch
 
 ---
 
@@ -187,15 +130,15 @@ A modern, fast QR code generator with customization options. Paste any text or U
 | Framework | Next.js 16 (App Router) |
 | Language | TypeScript |
 | Styling | Tailwind CSS v4 + shadcn/ui |
-| QR Generation | `qrcode.react` (React component) + `qrcode` (matrix generation) |
-| Styling Engine | `qr-code-styling` (for advanced dot/corner/gradient customization) |
-| Canvas | HTML5 Canvas for PNG export |
+| QR Generation | `qrcode.react` (React SVG) + `qr-code-styling` (advanced styling) |
+| QR Scanning | `qr-scanner` (nimiq) — camera + image decode |
+| Toast | `sonner` |
 | Deployment | Vercel |
 
 ### Library Rationale
-- **`qrcode.react`** — Best React integration, renders as JSX, 5.9KB gzipped, zero deps, SVG output
-- **`qrcode`** — Battle-tested matrix generation for custom canvas rendering, logo overlay
+- **`qrcode.react`** — Best React integration, renders as JSX, zero deps, SVG output
 - **`qr-code-styling`** — Advanced visual customization (dot shapes, corners, gradients, logos)
+- **`qr-scanner`** — Lightweight (~16KB gzipped), supports camera + image + clipboard paste
 
 ---
 
@@ -227,8 +170,11 @@ A modern, fast QR code generator with customization options. Paste any text or U
 - [x] QR history (localStorage)
 - [x] Style presets/templates
 
-### V3 (Optional)
-- [ ] QR scanner (camera integration)
+### V3
+- [x] QR scanner (camera integration)
+- [x] Image upload scanning
+- [x] Clipboard paste scanning
+- [x] Type-aware result detection (URL, WiFi, vCard, etc.)
 - [ ] Batch generation
 - [ ] PWA with offline support
 - [ ] Keyboard shortcuts
@@ -254,38 +200,44 @@ A modern, fast QR code generator with customization options. Paste any text or U
 qr-generator/
 ├── src/
 │   ├── app/
-│   │   ├── page.tsx           # Main page
-│   │   ├── layout.tsx         # Root layout
-│   │   └── globals.css        # Tailwind imports
+│   │   ├── page.tsx              # Main page with header
+│   │   ├── layout.tsx            # Root layout with providers
+│   │   └── globals.css           # Tailwind imports + theme tokens
 │   ├── components/
-│   │   ├── QRGenerator.tsx    # Main orchestrator
-│   │   ├── QRInput.tsx        # Type-specific input forms
-│   │   ├── QRTypeSelector.tsx # QR type switcher
-│   │   ├── QRPreview.tsx      # QR display
-│   │   ├── ColorPicker.tsx    # Color customization
-│   │   ├── StylePicker.tsx    # Dot/corner style options
-│   │   ├── LogoUploader.tsx   # Logo upload component
-│   │   ├── DownloadButton.tsx # Export options
-│   │   ├── Toast.tsx          # Notification component
-│   │   └── ui/                # shadcn components
+│   │   ├── QRGenerator.tsx       # Main orchestrator (Generate/Scan tabs)
+│   │   ├── QRInput.tsx           # Type-specific input forms
+│   │   ├── QRTypeSelector.tsx    # 3x3 visual grid picker
+│   │   ├── QRPreview.tsx         # Live QR display (qrcode.react)
+│   │   ├── QRPreviewStylized.tsx # Gradient QR display (qr-code-styling)
+│   │   ├── QRScanner.tsx         # Camera + image + clipboard scanner
+│   │   ├── ColorPicker.tsx       # Colors + contrast ratio
+│   │   ├── StylePicker.tsx       # Dot/corner style grid
+│   │   ├── GradientPicker.tsx    # Gradient config (linear/radial)
+│   │   ├── StylePresets.tsx      # One-click theme presets
+│   │   ├── LogoUploader.tsx      # Logo upload with preview
+│   │   ├── DownloadButton.tsx    # Export options (PNG/SVG/Copy)
+│   │   ├── History.tsx           # Horizontal scroll history
+│   │   ├── ThemeToggle.tsx       # Dark/light mode switch
+│   │   ├── Toast.tsx             # Toast notification hook
+│   │   └── ui/                   # shadcn/ui components
 │   ├── lib/
-│   │   ├── generateQR.ts      # QR generation logic
-│   │   ├── qr-types.ts        # QR type definitions
-│   │   ├── constants.ts       # Color palette, defaults
-│   │   └── contrast.ts        # WCAG contrast calculation
+│   │   ├── qr-types.ts           # QR type formatters & initial fields
+│   │   ├── constants.ts          # Defaults, presets, options
+│   │   ├── contrast.ts           # WCAG contrast calculation
+│   │   └── utils.ts              # cn() utility
 │   ├── hooks/
-│   │   ├── useQRConfig.ts     # QR state management
-│   │   └── useExport.ts       # Export logic
+│   │   ├── useQRConfig.ts        # QR state management hook
+│   │   └── useExport.ts          # Export logic hook (qr-code-styling)
 │   └── types/
-│       └── index.ts           # Shared TypeScript types
+│       └── index.ts              # Shared TypeScript types
 ├── docs/
-│   ├── README.md              # Project overview
-│   ├── ARCHITECTURE.md        # System architecture
-│   ├── COMPONENTS.md          # Component documentation
-│   ├── DEPLOYMENT.md          # Deployment guide
-│   ├── CONTRIBUTING.md        # Contribution guidelines
-│   └── SECURITY.md            # Security practices
-├── public/                    # Static assets
+│   ├── README.md                 # Documentation index
+│   ├── ARCHITECTURE.md           # System architecture
+│   ├── COMPONENTS.md             # Component documentation
+│   ├── DEPLOYMENT.md             # Deployment guide
+│   ├── CONTRIBUTING.md           # Contribution guidelines
+│   └── SECURITY.md               # Security practices
+├── public/                       # Static assets
 ├── package.json
 ├── tsconfig.json
 ├── next.config.ts
