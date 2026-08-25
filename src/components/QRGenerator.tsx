@@ -6,7 +6,7 @@ import { useToast } from '@/components/Toast';
 import { useHistory } from '@/components/History';
 import { Toaster } from '@/components/ui/sonner';
 import { Card, CardContent } from '@/components/ui/card';
-import { Accordion, AccordionContent, AccordionItem } from '@/components/ui/accordion';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import QRTypeSelector from './QRTypeSelector';
 import QRInput from './QRInput';
 import QRPreview from './QRPreview';
@@ -233,10 +233,7 @@ export default function QRGenerator() {
               <AccordionItem key={section.id} value={section.id} className="border-none">
                 <Card>
                   <CardContent className="p-0">
-                    <button
-                      className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50"
-                      type="button"
-                    >
+                    <AccordionTrigger className="flex w-full items-center gap-3 px-4 py-3 text-left no-underline hover:no-underline [&[data-state=open]>svg]:rotate-180">
                       <span className="text-muted-foreground">{section.icon}</span>
                       <div className="flex-1 min-w-0">
                         <span className="text-sm font-medium block">{section.title}</span>
@@ -252,7 +249,7 @@ export default function QRGenerator() {
                       >
                         <path d="M6 9l6 6 6-6" />
                       </svg>
-                    </button>
+                    </AccordionTrigger>
                     <AccordionContent>
                       <div className="border-t px-4 pb-4 pt-3">
                         {section.content}
