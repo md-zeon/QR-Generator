@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { QRConfig } from '@/types';
 import { SIZE_OPTIONS, ERROR_CORRECTION_OPTIONS } from '@/lib/constants';
 
@@ -39,40 +38,34 @@ export default function DownloadButton({
       {/* Size & Error Correction */}
       <div className="grid grid-cols-2 gap-2">
         <div className="space-y-1">
-          <Label className="text-xs">Size</Label>
-          <Select
+          <Label className="text-xs" htmlFor="qr-size">Size</Label>
+          <select
+            id="qr-size"
             value={String(config.size)}
-            onValueChange={(value) => onConfigChange({ size: Number(value) })}
+            onChange={(e) => onConfigChange({ size: Number(e.target.value) })}
+            className="flex h-8 w-full rounded-md border border-input bg-transparent px-2 py-1 text-xs shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
-            <SelectTrigger className="h-8">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {SIZE_OPTIONS.map((size) => (
-                <SelectItem key={size.value} value={String(size.value)}>
-                  {size.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {SIZE_OPTIONS.map((size) => (
+              <option key={size.value} value={size.value}>
+                {size.label}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="space-y-1">
-          <Label className="text-xs">Error Correction</Label>
-          <Select
+          <Label className="text-xs" htmlFor="qr-ec">Error Correction</Label>
+          <select
+            id="qr-ec"
             value={config.errorCorrection}
-            onValueChange={(value) => onConfigChange({ errorCorrection: value as QRConfig['errorCorrection'] })}
+            onChange={(e) => onConfigChange({ errorCorrection: e.target.value as QRConfig['errorCorrection'] })}
+            className="flex h-8 w-full rounded-md border border-input bg-transparent px-2 py-1 text-xs shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
-            <SelectTrigger className="h-8">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {ERROR_CORRECTION_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {ERROR_CORRECTION_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
     </div>
