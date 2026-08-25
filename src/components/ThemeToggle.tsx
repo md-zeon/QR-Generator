@@ -5,18 +5,23 @@ import { Switch } from '@/components/ui/switch';
 
 type Theme = 'light' | 'dark';
 
+function getInitialTheme(): Theme {
+  if (typeof window === 'undefined') return 'dark';
+  const stored = localStorage.getItem('theme') as Theme | null;
+  if (stored === 'light' || stored === 'dark') return stored;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>('dark');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    const stored = localStorage.getItem('theme') as Theme | null;
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    const initial = stored || systemTheme;
+    const initial = getInitialTheme();
     setTheme(initial);
     document.documentElement.classList.toggle('dark', initial === 'dark');
     document.documentElement.classList.toggle('light', initial === 'light');
+    setMounted(true);
   }, []);
 
   const toggleTheme = (checked: boolean) => {

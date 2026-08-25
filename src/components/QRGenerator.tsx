@@ -132,7 +132,7 @@ export default function QRGenerator() {
       <div className="mx-auto max-w-5xl px-4 py-6 sm:py-8">
         {/* Hero / Onboarding */}
         <div className="mb-8 text-center">
-          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
             Create your QR code
           </h2>
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">
