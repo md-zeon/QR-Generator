@@ -29,12 +29,7 @@ export default function Home() {
                 />
               </svg>
             </div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-base font-semibold tracking-tight">QR Generator</h1>
-              <span className="hidden rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary sm:inline-block">
-                100% Client-Side
-              </span>
-            </div>
+            <h1 className="text-base font-semibold tracking-tight">QR Generator</h1>
           </div>
           <ThemeToggle />
         </div>
