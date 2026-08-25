@@ -1,4 +1,5 @@
 import QRGenerator from '@/components/QRGenerator';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function Home() {
   return (
@@ -25,9 +26,12 @@ export default function Home() {
             </div>
             <h1 className="text-xl font-bold text-white">QR Generator</h1>
           </div>
-          <p className="hidden text-sm text-zinc-500 sm:block">
-            Fast, private, and free. No data leaves your browser.
-          </p>
+          <div className="flex items-center gap-3">
+            <p className="hidden text-sm text-zinc-500 sm:block">
+              Fast, private, and free. No data leaves your browser.
+            </p>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 

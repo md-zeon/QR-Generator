@@ -6,35 +6,58 @@ interface QRInputProps {
   type: QRType;
   fields: Record<string, string>;
   onFieldChange: (field: string, value: string) => void;
-  error?: string;
+  errors?: Record<string, string>;
 }
 
-export default function QRInput({ type, fields, onFieldChange, error }: QRInputProps) {
+export default function QRInput({ type, fields, onFieldChange, errors = {} }: QRInputProps) {
+  const renderFieldError = (field: string) => {
+    if (errors[field]) {
+      return (
+        <p className="mt-1 text-sm text-red-400" role="alert">
+          {errors[field]}
+        </p>
+      );
+    }
+    return null;
+  };
+
   const renderFields = () => {
     switch (type) {
       case 'url':
       case 'text':
         return (
-          <textarea
-            value={fields.content || ''}
-            onChange={(e) => onFieldChange('content', e.target.value)}
-            placeholder={type === 'url' ? 'https://example.com' : 'Enter your text here...'}
-            className="h-32 w-full resize-none rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-            aria-label={type === 'url' ? 'URL' : 'Text content'}
-          />
+          <div>
+            <textarea
+              value={fields.content || ''}
+              onChange={(e) => onFieldChange('content', e.target.value)}
+              placeholder={type === 'url' ? 'https://example.com' : 'Enter your text here...'}
+              className={`h-32 w-full resize-none rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
+                errors.content ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
+              }`}
+              aria-label={type === 'url' ? 'URL' : 'Text content'}
+              aria-invalid={!!errors.content}
+            />
+            {renderFieldError('content')}
+          </div>
         );
 
       case 'wifi':
         return (
           <div className="space-y-3">
-            <input
-              type="text"
-              value={fields.ssid || ''}
-              onChange={(e) => onFieldChange('ssid', e.target.value)}
-              placeholder="Network name (SSID)"
-              className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="WiFi network name"
-            />
+            <div>
+              <input
+                type="text"
+                value={fields.ssid || ''}
+                onChange={(e) => onFieldChange('ssid', e.target.value)}
+                placeholder="Network name (SSID)"
+                className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
+                  errors.ssid ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
+                }`}
+                aria-label="WiFi network name"
+                aria-invalid={!!errors.ssid}
+              />
+              {renderFieldError('ssid')}
+            </div>
             <input
               type="text"
               value={fields.password || ''}
@@ -59,14 +82,20 @@ export default function QRInput({ type, fields, onFieldChange, error }: QRInputP
       case 'vcard':
         return (
           <div className="space-y-3">
-            <input
-              type="text"
-              value={fields.name || ''}
-              onChange={(e) => onFieldChange('name', e.target.value)}
-              placeholder="Full name"
-              className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="Full name"
-            />
+            <div>
+              <input
+                type="text"
+                value={fields.name || ''}
+                onChange={(e) => onFieldChange('name', e.target.value)}
+                placeholder="Full name"
+                className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
+                  errors.name ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
+                }`}
+                aria-label="Full name"
+                aria-invalid={!!errors.name}
+              />
+              {renderFieldError('name')}
+            </div>
             <input
               type="tel"
               value={fields.phone || ''}
@@ -97,14 +126,20 @@ export default function QRInput({ type, fields, onFieldChange, error }: QRInputP
       case 'email':
         return (
           <div className="space-y-3">
-            <input
-              type="email"
-              value={fields.to || ''}
-              onChange={(e) => onFieldChange('to', e.target.value)}
-              placeholder="To email"
-              className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="To email"
-            />
+            <div>
+              <input
+                type="email"
+                value={fields.to || ''}
+                onChange={(e) => onFieldChange('to', e.target.value)}
+                placeholder="To email"
+                className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
+                  errors.to ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
+                }`}
+                aria-label="To email"
+                aria-invalid={!!errors.to}
+              />
+              {renderFieldError('to')}
+            </div>
             <input
               type="text"
               value={fields.subject || ''}
@@ -126,14 +161,20 @@ export default function QRInput({ type, fields, onFieldChange, error }: QRInputP
       case 'sms':
         return (
           <div className="space-y-3">
-            <input
-              type="tel"
-              value={fields.number || ''}
-              onChange={(e) => onFieldChange('number', e.target.value)}
-              placeholder="Phone number"
-              className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="Phone number"
-            />
+            <div>
+              <input
+                type="tel"
+                value={fields.number || ''}
+                onChange={(e) => onFieldChange('number', e.target.value)}
+                placeholder="Phone number"
+                className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
+                  errors.number ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
+                }`}
+                aria-label="Phone number"
+                aria-invalid={!!errors.number}
+              />
+              {renderFieldError('number')}
+            </div>
             <textarea
               value={fields.body || ''}
               onChange={(e) => onFieldChange('body', e.target.value)}
@@ -146,27 +187,39 @@ export default function QRInput({ type, fields, onFieldChange, error }: QRInputP
 
       case 'phone':
         return (
-          <input
-            type="tel"
-            value={fields.number || ''}
-            onChange={(e) => onFieldChange('number', e.target.value)}
-            placeholder="+1 234 567 8900"
-            className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-            aria-label="Phone number"
-          />
-        );
-
-      case 'whatsapp':
-        return (
-          <div className="space-y-3">
+          <div>
             <input
               type="tel"
               value={fields.number || ''}
               onChange={(e) => onFieldChange('number', e.target.value)}
               placeholder="+1 234 567 8900"
-              className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="WhatsApp number"
+              className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
+                errors.number ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
+              }`}
+              aria-label="Phone number"
+              aria-invalid={!!errors.number}
             />
+            {renderFieldError('number')}
+          </div>
+        );
+
+      case 'whatsapp':
+        return (
+          <div className="space-y-3">
+            <div>
+              <input
+                type="tel"
+                value={fields.number || ''}
+                onChange={(e) => onFieldChange('number', e.target.value)}
+                placeholder="+1 234 567 8900"
+                className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
+                  errors.number ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
+                }`}
+                aria-label="WhatsApp number"
+                aria-invalid={!!errors.number}
+              />
+              {renderFieldError('number')}
+            </div>
             <textarea
               value={fields.message || ''}
               onChange={(e) => onFieldChange('message', e.target.value)}
@@ -180,36 +233,54 @@ export default function QRInput({ type, fields, onFieldChange, error }: QRInputP
       case 'location':
         return (
           <div className="space-y-3">
-            <input
-              type="text"
-              value={fields.latitude || ''}
-              onChange={(e) => onFieldChange('latitude', e.target.value)}
-              placeholder="Latitude (e.g., 40.7128)"
-              className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="Latitude"
-            />
-            <input
-              type="text"
-              value={fields.longitude || ''}
-              onChange={(e) => onFieldChange('longitude', e.target.value)}
-              placeholder="Longitude (e.g., -74.0060)"
-              className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="Longitude"
-            />
+            <div>
+              <input
+                type="text"
+                value={fields.latitude || ''}
+                onChange={(e) => onFieldChange('latitude', e.target.value)}
+                placeholder="Latitude (e.g., 40.7128)"
+                className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
+                  errors.latitude ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
+                }`}
+                aria-label="Latitude"
+                aria-invalid={!!errors.latitude}
+              />
+              {renderFieldError('latitude')}
+            </div>
+            <div>
+              <input
+                type="text"
+                value={fields.longitude || ''}
+                onChange={(e) => onFieldChange('longitude', e.target.value)}
+                placeholder="Longitude (e.g., -74.0060)"
+                className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
+                  errors.longitude ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
+                }`}
+                aria-label="Longitude"
+                aria-invalid={!!errors.longitude}
+              />
+              {renderFieldError('longitude')}
+            </div>
           </div>
         );
 
       case 'calendar':
         return (
           <div className="space-y-3">
-            <input
-              type="text"
-              value={fields.title || ''}
-              onChange={(e) => onFieldChange('title', e.target.value)}
-              placeholder="Event title"
-              className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:border-purple-500 focus:outline-none"
-              aria-label="Event title"
-            />
+            <div>
+              <input
+                type="text"
+                value={fields.title || ''}
+                onChange={(e) => onFieldChange('title', e.target.value)}
+                placeholder="Event title"
+                className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white placeholder-zinc-500 transition-colors focus:outline-none ${
+                  errors.title ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
+                }`}
+                aria-label="Event title"
+                aria-invalid={!!errors.title}
+              />
+              {renderFieldError('title')}
+            </div>
             <input
               type="text"
               value={fields.location || ''}
@@ -225,9 +296,13 @@ export default function QRInput({ type, fields, onFieldChange, error }: QRInputP
                   type="datetime-local"
                   value={fields.start || ''}
                   onChange={(e) => onFieldChange('start', e.target.value)}
-                  className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white transition-colors focus:border-purple-500 focus:outline-none"
+                  className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white transition-colors focus:outline-none ${
+                    errors.start ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
+                  }`}
                   aria-label="Event start time"
+                  aria-invalid={!!errors.start}
                 />
+                {renderFieldError('start')}
               </div>
               <div>
                 <label className="mb-1 block text-xs text-zinc-400">End</label>
@@ -235,9 +310,13 @@ export default function QRInput({ type, fields, onFieldChange, error }: QRInputP
                   type="datetime-local"
                   value={fields.end || ''}
                   onChange={(e) => onFieldChange('end', e.target.value)}
-                  className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white transition-colors focus:border-purple-500 focus:outline-none"
+                  className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white transition-colors focus:outline-none ${
+                    errors.end ? 'border-red-500 focus:border-red-500' : 'border-zinc-700 focus:border-purple-500'
+                  }`}
                   aria-label="Event end time"
+                  aria-invalid={!!errors.end}
                 />
+                {renderFieldError('end')}
               </div>
             </div>
           </div>
@@ -248,14 +327,5 @@ export default function QRInput({ type, fields, onFieldChange, error }: QRInputP
     }
   };
 
-  return (
-    <div className="space-y-2">
-      {renderFields()}
-      {error && (
-        <p className="text-sm text-red-400" role="alert">
-          {error}
-        </p>
-      )}
-    </div>
-  );
+  return <div className="space-y-2">{renderFields()}</div>;
 }
