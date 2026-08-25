@@ -4,6 +4,11 @@ import { useState, useEffect } from 'react';
 import { getContrastRatio, getContrastRating } from '@/lib/contrast';
 import { PRESET_COLORS } from '@/lib/constants';
 
+interface ContrastRating {
+  level: 'AAA' | 'AA' | 'Fail';
+  message: string;
+}
+
 interface ColorPickerProps {
   foreground: string;
   background: string;
@@ -18,7 +23,7 @@ export default function ColorPicker({
   onBackgroundChange,
 }: ColorPickerProps) {
   const [contrastRatio, setContrastRatio] = useState(21);
-  const [contrastRating, setContrastRating] = useState({ level: 'AAA' as const, message: '' });
+  const [contrastRating, setContrastRating] = useState<ContrastRating>({ level: 'AAA', message: '' });
 
   useEffect(() => {
     const ratio = getContrastRatio(foreground, background);
