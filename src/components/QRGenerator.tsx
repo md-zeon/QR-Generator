@@ -31,6 +31,7 @@ export default function QRGenerator() {
     handleTypeChange,
     handleFieldChange,
     handleLogoChange,
+    restoreConfig,
   } = useQRConfig();
 
   const { addToast } = useToast();
@@ -246,10 +247,7 @@ export default function QRGenerator() {
               <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
                 <HistoryPanel
                   history={history}
-                  onSelect={(cfg) => {
-                    handleConfigChange(cfg);
-                    handleTypeChange(cfg.type);
-                  }}
+                  onSelect={(cfg) => restoreConfig(cfg)}
                   onRemove={removeFromHistory}
                   onClear={clearHistory}
                 />

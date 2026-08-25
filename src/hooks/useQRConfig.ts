@@ -146,6 +146,12 @@ export function useQRConfig() {
 
   const isValid = Object.keys(errors).length === 0;
 
+  const restoreConfig = useCallback((cfg: QRConfig) => {
+    setConfig(cfg);
+    setFields(getInitialFields(cfg.type));
+    setErrors({});
+  }, []);
+
   return {
     config,
     fields,
@@ -155,5 +161,6 @@ export function useQRConfig() {
     handleTypeChange,
     handleFieldChange,
     handleLogoChange,
+    restoreConfig,
   };
 }
