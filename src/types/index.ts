@@ -19,6 +19,15 @@ export interface QRConfig {
   cornerStyle: CornerStyle;
   logo: string | null;
   logoSize: number;
+  gradient: GradientConfig;
+}
+
+export interface GradientConfig {
+  enabled: boolean;
+  type: 'linear' | 'radial';
+  color1: string;
+  color2: string;
+  rotation: number;
 }
 
 export interface Toast {

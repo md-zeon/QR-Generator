@@ -23,6 +23,13 @@ export const DEFAULT_QR_CONFIG: QRConfig = {
   cornerStyle: 'square',
   logo: null,
   logoSize: 20,
+  gradient: {
+    enabled: false,
+    type: 'linear',
+    color1: '#5542FF',
+    color2: '#FF5542',
+    rotation: 0,
+  },
 };
 
 export const SIZE_OPTIONS = [
@@ -59,4 +66,72 @@ export const PRESET_COLORS = [
   { foreground: '#7c2d12', background: '#fef3c7', label: 'Amber' },
   { foreground: '#5542FF', background: '#ffffff', label: 'Purple' },
   { foreground: '#0f766e', background: '#f0fdfa', label: 'Teal' },
+];
+
+export interface StylePreset {
+  label: string;
+  dotStyle: DotStyle;
+  cornerStyle: CornerStyle;
+  foreground: string;
+  background: string;
+  gradient?: QRConfig['gradient'];
+}
+
+export const STYLE_PRESETS: StylePreset[] = [
+  {
+    label: 'Minimal',
+    dotStyle: 'square',
+    cornerStyle: 'square',
+    foreground: '#000000',
+    background: '#ffffff',
+  },
+  {
+    label: 'Modern',
+    dotStyle: 'rounded',
+    cornerStyle: 'rounded',
+    foreground: '#1a1a2e',
+    background: '#f8fafc',
+  },
+  {
+    label: 'Playful',
+    dotStyle: 'dots',
+    cornerStyle: 'dots',
+    foreground: '#5542FF',
+    background: '#ffffff',
+  },
+  {
+    label: 'Bold',
+    dotStyle: 'diamond',
+    cornerStyle: 'square',
+    foreground: '#dc2626',
+    background: '#fef2f2',
+  },
+  {
+    label: 'Neon',
+    dotStyle: 'rounded',
+    cornerStyle: 'rounded',
+    foreground: '#00ff88',
+    background: '#0a0a0a',
+    gradient: {
+      enabled: true,
+      type: 'linear',
+      color1: '#00ff88',
+      color2: '#0088ff',
+      rotation: 135,
+    },
+  },
+  {
+    label: 'Sunset',
+    dotStyle: 'dots',
+    cornerStyle: 'rounded',
+    foreground: '#ff6b6b',
+    background: '#1a1a2e',
+    gradient: {
+      enabled: true,
+      type: 'linear',
+      color1: '#ff6b6b',
+      color2: '#ffd93d',
+      rotation: 90,
+    },
+  },
 ];

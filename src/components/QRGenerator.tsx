@@ -10,8 +10,11 @@ import HistoryPanel from '@/components/History';
 import QRTypeSelector from './QRTypeSelector';
 import QRInput from './QRInput';
 import QRPreview from './QRPreview';
+import QRPreviewStylized from './QRPreviewStylized';
 import ColorPicker from './ColorPicker';
+import GradientPicker from './GradientPicker';
 import StylePicker from './StylePicker';
+import StylePresets from './StylePresets';
 import LogoUploader from './LogoUploader';
 import DownloadButton from './DownloadButton';
 
@@ -62,6 +65,16 @@ export default function QRGenerator() {
         ),
       },
       {
+        id: 'gradient',
+        title: 'Gradient',
+        content: (
+          <GradientPicker
+            gradient={config.gradient}
+            onGradientChange={(gradient) => handleConfigChange({ gradient })}
+          />
+        ),
+      },
+      {
         id: 'logo',
         title: 'Logo',
         content: (
@@ -101,6 +114,31 @@ export default function QRGenerator() {
             </section>
 
             {/* Customization Sections */}
+            {/* Presets */}
+            <details
+              open
+              className="group rounded-2xl border border-zinc-800 bg-zinc-900/50"
+            >
+              <summary className="flex cursor-pointer items-center justify-between px-4 py-3 font-medium text-white">
+                Presets
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-zinc-400 transition-transform group-open:rotate-180"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </summary>
+              <div className="border-t border-zinc-800 px-4 pb-4 pt-3">
+                <StylePresets onApply={handleConfigChange} />
+              </div>
+            </details>
+
             {sections.map((section) => (
               <details
                 key={section.id}
@@ -145,7 +183,11 @@ export default function QRGenerator() {
             {/* Preview */}
             <section className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
               <div ref={qrRef}>
-                <QRPreview config={config} />
+                {config.gradient.enabled ? (
+                  <QRPreviewStylized config={config} />
+                ) : (
+                  <QRPreview config={config} />
+                )}
               </div>
             </section>
 
