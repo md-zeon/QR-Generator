@@ -4,9 +4,8 @@ import ThemeToggle from '@/components/ThemeToggle';
 export default function Home() {
   return (
     <main className="min-h-screen bg-background">
-      {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <svg
@@ -29,13 +28,12 @@ export default function Home() {
                 />
               </svg>
             </div>
-            <h1 className="text-base font-semibold tracking-tight">QR Generator</h1>
+            <h1 className="text-base font-semibold tracking-tight">QR Studio</h1>
           </div>
           <ThemeToggle />
         </div>
       </header>
 
-      {/* Main Content */}
       <QRGenerator />
     </main>
   );

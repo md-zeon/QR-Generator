@@ -1,6 +1,5 @@
 'use client';
 
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QR_TYPES } from '@/lib/constants';
 import { QRType } from '@/types';
 
@@ -9,25 +8,41 @@ interface QRTypeSelectorProps {
   onChange: (type: QRType) => void;
 }
 
+const TYPE_DESCRIPTIONS: Record<QRType, string> = {
+  url: 'Open a website',
+  text: 'Plain text',
+  wifi: 'WiFi network',
+  vcard: 'Contact info',
+  email: 'Send email',
+  sms: 'Send SMS',
+  phone: 'Dial number',
+  whatsapp: 'WhatsApp chat',
+  location: 'Map location',
+  calendar: 'Event details',
+};
+
 export default function QRTypeSelector({ value, onChange }: QRTypeSelectorProps) {
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium">QR Type</label>
-      <Tabs value={value} onValueChange={(v) => onChange(v as QRType)}>
-        <TabsList className="w-full justify-start gap-1 overflow-x-auto p-1">
-          {QR_TYPES.map((type) => (
-            <TabsTrigger
-              key={type.id}
-              value={type.id}
-              className="flex shrink-0 gap-1.5 px-3 py-1.5 text-xs sm:text-sm"
-            >
-              <span>{type.icon}</span>
-              <span className="hidden sm:inline">{type.label}</span>
-              <span className="sm:hidden">{type.label.slice(0, 4)}</span>
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">QR Type</label>
+      <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-3">
+        {QR_TYPES.map((type) => (
+          <button
+            key={type.id}
+            onClick={() => onChange(type.id)}
+            type="button"
+            className={`flex flex-col items-center gap-1 rounded-lg border p-2.5 text-center transition-all ${
+              value === type.id
+                ? 'border-primary bg-primary/5 text-primary ring-1 ring-primary/20'
+                : 'border-border bg-card hover:border-muted-foreground/30 hover:bg-muted/50'
+            }`}
+          >
+            <span className="text-lg leading-none">{type.icon}</span>
+            <span className="text-xs font-medium leading-tight">{type.label}</span>
+            <span className="hidden text-[10px] text-muted-foreground sm:block">{TYPE_DESCRIPTIONS[type.id]}</span>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
