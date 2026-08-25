@@ -13,7 +13,7 @@ export const QR_TYPES: QRTypeOption[] = [
 ];
 
 export const DEFAULT_QR_CONFIG: QRConfig = {
-  content: 'https://github.com/md-zeon/QR-Generator',
+  content: '',
   type: 'url',
   foreground: '#000000',
   background: '#ffffff',

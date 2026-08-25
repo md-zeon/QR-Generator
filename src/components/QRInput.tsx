@@ -12,10 +12,23 @@ interface QRInputProps {
   errors?: Record<string, string>;
 }
 
+const TYPE_DESCRIPTIONS: Record<QRType, string> = {
+  url: 'Enter the URL you want to encode',
+  text: 'Enter the text you want to encode',
+  wifi: 'Enter your WiFi network details',
+  vcard: 'Enter contact information',
+  email: 'Enter email address and optional message',
+  sms: 'Enter phone number and optional message',
+  phone: 'Enter the phone number to dial',
+  whatsapp: 'Enter WhatsApp number and optional message',
+  location: 'Enter latitude and longitude coordinates',
+  calendar: 'Enter event details',
+};
+
 export default function QRInput({ type, fields, onFieldChange, errors = {} }: QRInputProps) {
   const renderError = (field: string) => {
     if (errors[field]) {
-      return <p className="text-xs text-destructive">{errors[field]}</p>;
+      return <p className="text-xs text-destructive mt-1">{errors[field]}</p>;
     }
     return null;
   };
@@ -33,6 +46,7 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
               placeholder="https://example.com"
               className={errors.content ? 'border-destructive' : ''}
               aria-invalid={!!errors.content}
+              autoFocus
             />
             {renderError('content')}
           </div>
@@ -41,14 +55,15 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
       case 'text':
         return (
           <div className="space-y-2">
-            <Label htmlFor="content">Text</Label>
+            <Label htmlFor="content">Text Content</Label>
             <Textarea
               id="content"
               value={fields.content || ''}
               onChange={(e) => onFieldChange('content', e.target.value)}
-              placeholder="Enter your text here..."
-              className={errors.content ? 'border-destructive' : ''}
+              placeholder="Enter any text you want to encode in the QR code..."
+              className={errors.content ? 'border-destructive min-h-[100px]' : 'min-h-[100px]'}
               aria-invalid={!!errors.content}
+              autoFocus
             />
             {renderError('content')}
           </div>
@@ -56,16 +71,17 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
 
       case 'wifi':
         return (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="ssid">Network Name (SSID)</Label>
+              <Label htmlFor="ssid">Network Name (SSID) *</Label>
               <Input
                 id="ssid"
                 value={fields.ssid || ''}
                 onChange={(e) => onFieldChange('ssid', e.target.value)}
-                placeholder="My WiFi Network"
+                placeholder="MyWiFiNetwork"
                 className={errors.ssid ? 'border-destructive' : ''}
                 aria-invalid={!!errors.ssid}
+                autoFocus
               />
               {renderError('ssid')}
             </div>
@@ -78,18 +94,19 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
                 onChange={(e) => onFieldChange('password', e.target.value)}
                 placeholder="Enter password"
               />
+              <p className="text-xs text-muted-foreground">Leave empty for open networks</p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="encryption">Encryption</Label>
+              <Label htmlFor="encryption">Security Type</Label>
               <select
                 id="encryption"
                 value={fields.encryption || 'WPA'}
                 onChange={(e) => onFieldChange('encryption', e.target.value)}
-                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               >
-                <option value="WPA">WPA/WPA2</option>
-                <option value="WEP">WEP</option>
-                <option value="nopass">None</option>
+                <option value="WPA">WPA/WPA2 (most common)</option>
+                <option value="WEP">WEP (legacy)</option>
+                <option value="nopass">None (open network)</option>
               </select>
             </div>
           </div>
@@ -97,9 +114,9 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
 
       case 'vcard':
         return (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name">Full Name *</Label>
               <Input
                 id="name"
                 value={fields.name || ''}
@@ -107,28 +124,31 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
                 placeholder="John Doe"
                 className={errors.name ? 'border-destructive' : ''}
                 aria-invalid={!!errors.name}
+                autoFocus
               />
               {renderError('name')}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={fields.phone || ''}
-                onChange={(e) => onFieldChange('phone', e.target.value)}
-                placeholder="+1 234 567 8900"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={fields.email || ''}
-                onChange={(e) => onFieldChange('email', e.target.value)}
-                placeholder="john@example.com"
-              />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={fields.phone || ''}
+                  onChange={(e) => onFieldChange('phone', e.target.value)}
+                  placeholder="+1 234 567 8900"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={fields.email || ''}
+                  onChange={(e) => onFieldChange('email', e.target.value)}
+                  placeholder="john@example.com"
+                />
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="organization">Organization</Label>
@@ -136,17 +156,18 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
                 id="organization"
                 value={fields.organization || ''}
                 onChange={(e) => onFieldChange('organization', e.target.value)}
-                placeholder="Acme Inc. (optional)"
+                placeholder="Acme Inc."
               />
+              <p className="text-xs text-muted-foreground">Optional</p>
             </div>
           </div>
         );
 
       case 'email':
         return (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="to">To Email</Label>
+              <Label htmlFor="to">Recipient Email *</Label>
               <Input
                 id="to"
                 type="email"
@@ -155,6 +176,7 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
                 placeholder="recipient@example.com"
                 className={errors.to ? 'border-destructive' : ''}
                 aria-invalid={!!errors.to}
+                autoFocus
               />
               {renderError('to')}
             </div>
@@ -164,27 +186,29 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
                 id="subject"
                 value={fields.subject || ''}
                 onChange={(e) => onFieldChange('subject', e.target.value)}
-                placeholder="Email subject (optional)"
+                placeholder="What is this about?"
               />
+              <p className="text-xs text-muted-foreground">Optional</p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="body">Message Body</Label>
+              <Label htmlFor="body">Message</Label>
               <Textarea
                 id="body"
                 value={fields.body || ''}
                 onChange={(e) => onFieldChange('body', e.target.value)}
-                placeholder="Your message (optional)"
+                placeholder="Your email message..."
                 className="min-h-[80px]"
               />
+              <p className="text-xs text-muted-foreground">Optional</p>
             </div>
           </div>
         );
 
       case 'sms':
         return (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="number">Phone Number</Label>
+              <Label htmlFor="number">Phone Number *</Label>
               <Input
                 id="number"
                 type="tel"
@@ -193,6 +217,7 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
                 placeholder="+1 234 567 8900"
                 className={errors.number ? 'border-destructive' : ''}
                 aria-invalid={!!errors.number}
+                autoFocus
               />
               {renderError('number')}
             </div>
@@ -202,9 +227,10 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
                 id="body"
                 value={fields.body || ''}
                 onChange={(e) => onFieldChange('body', e.target.value)}
-                placeholder="Your message (optional)"
+                placeholder="Your SMS message..."
                 className="min-h-[80px]"
               />
+              <p className="text-xs text-muted-foreground">Optional</p>
             </div>
           </div>
         );
@@ -212,7 +238,7 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
       case 'phone':
         return (
           <div className="space-y-2">
-            <Label htmlFor="number">Phone Number</Label>
+            <Label htmlFor="number">Phone Number *</Label>
             <Input
               id="number"
               type="tel"
@@ -221,16 +247,18 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
               placeholder="+1 234 567 8900"
               className={errors.number ? 'border-destructive' : ''}
               aria-invalid={!!errors.number}
+              autoFocus
             />
             {renderError('number')}
+            <p className="text-xs text-muted-foreground">Scanning will prompt to call this number</p>
           </div>
         );
 
       case 'whatsapp':
         return (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="number">WhatsApp Number</Label>
+              <Label htmlFor="number">WhatsApp Number *</Label>
               <Input
                 id="number"
                 type="tel"
@@ -239,102 +267,56 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
                 placeholder="+1 234 567 8900"
                 className={errors.number ? 'border-destructive' : ''}
                 aria-invalid={!!errors.number}
+                autoFocus
               />
               {renderError('number')}
+              <p className="text-xs text-muted-foreground">Include country code (e.g., +1 for US)</p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="message">Message</Label>
+              <Label htmlFor="message">Pre-filled Message</Label>
               <Textarea
                 id="message"
                 value={fields.message || ''}
                 onChange={(e) => onFieldChange('message', e.target.value)}
-                placeholder="Your message (optional)"
+                placeholder="Hello! I found your QR code..."
                 className="min-h-[80px]"
               />
+              <p className="text-xs text-muted-foreground">Optional - the message will pre-fill in WhatsApp</p>
             </div>
           </div>
         );
 
       case 'location':
         return (
-          <div className="space-y-3">
-            <div className="space-y-2">
-              <Label htmlFor="latitude">Latitude</Label>
-              <Input
-                id="latitude"
-                value={fields.latitude || ''}
-                onChange={(e) => onFieldChange('latitude', e.target.value)}
-                placeholder="e.g., 40.7128"
-                className={errors.latitude ? 'border-destructive' : ''}
-                aria-invalid={!!errors.latitude}
-              />
-              {renderError('latitude')}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="longitude">Longitude</Label>
-              <Input
-                id="longitude"
-                value={fields.longitude || ''}
-                onChange={(e) => onFieldChange('longitude', e.target.value)}
-                placeholder="e.g., -74.0060"
-                className={errors.longitude ? 'border-destructive' : ''}
-                aria-invalid={!!errors.longitude}
-              />
-              {renderError('longitude')}
-            </div>
-          </div>
-        );
-
-      case 'calendar':
-        return (
-          <div className="space-y-3">
-            <div className="space-y-2">
-              <Label htmlFor="title">Event Title</Label>
-              <Input
-                id="title"
-                value={fields.title || ''}
-                onChange={(e) => onFieldChange('title', e.target.value)}
-                placeholder="Team Meeting"
-                className={errors.title ? 'border-destructive' : ''}
-                aria-invalid={!!errors.title}
-              />
-              {renderError('title')}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
-                value={fields.location || ''}
-                onChange={(e) => onFieldChange('location', e.target.value)}
-                placeholder="Conference Room A (optional)"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="start">Start</Label>
-                <input
-                  id="start"
-                  type="datetime-local"
-                  value={fields.start || ''}
-                  onChange={(e) => onFieldChange('start', e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                  aria-invalid={!!errors.start}
+                <Label htmlFor="latitude">Latitude *</Label>
+                <Input
+                  id="latitude"
+                  value={fields.latitude || ''}
+                  onChange={(e) => onFieldChange('latitude', e.target.value)}
+                  placeholder="40.7128"
+                  className={errors.latitude ? 'border-destructive' : ''}
+                  aria-invalid={!!errors.latitude}
+                  autoFocus
                 />
-                {renderError('start')}
+                {renderError('latitude')}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="end">End</Label>
-                <input
-                  id="end"
-                  type="datetime-local"
-                  value={fields.end || ''}
-                  onChange={(e) => onFieldChange('end', e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                  aria-invalid={!!errors.end}
+                <Label htmlFor="longitude">Longitude *</Label>
+                <Input
+                  id="longitude"
+                  value={fields.longitude || ''}
+                  onChange={(e) => onFieldChange('longitude', e.target.value)}
+                  placeholder="-74.0060"
+                  className={errors.longitude ? 'border-destructive' : ''}
+                  aria-invalid={!!errors.longitude}
                 />
-                {renderError('end')}
+                {renderError('longitude')}
               </div>
             </div>
+            <p className="text-xs text-muted-foreground">Enter coordinates. Scanning will open in your maps app.</p>
           </div>
         );
 
@@ -343,5 +325,10 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
     }
   };
 
-  return <div className="space-y-2">{renderFields()}</div>;
+  return (
+    <div className="space-y-2">
+      <p className="text-xs text-muted-foreground">{TYPE_DESCRIPTIONS[type]}</p>
+      <div className="mt-3">{renderFields()}</div>
+    </div>
+  );
 }
