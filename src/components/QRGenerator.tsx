@@ -40,6 +40,16 @@ export default function QRGenerator() {
 
   const hasContent = config.content.trim().length > 0;
 
+  const qrPreview = (
+    <div ref={qrRef}>
+      {config.gradient.enabled ? (
+        <QRPreviewStylized config={config} />
+      ) : (
+        <QRPreview config={config} />
+      )}
+    </div>
+  );
+
   return (
     <>
       <Toaster richColors position="bottom-right" />
@@ -47,12 +57,8 @@ export default function QRGenerator() {
       {/* Mobile: Preview first */}
       <div className="lg:hidden">
         <div className="border-b bg-card/50 px-4 py-6">
-          <div ref={qrRef} className="mx-auto max-w-[280px]">
-            {config.gradient.enabled ? (
-              <QRPreviewStylized config={config} />
-            ) : (
-              <QRPreview config={config} />
-            )}
+          <div className="mx-auto max-w-[280px]">
+            {qrPreview}
           </div>
         </div>
         <div className="border-b px-4 py-3">
@@ -101,13 +107,7 @@ export default function QRGenerator() {
               </div>
 
               <div className="rounded-xl border bg-card p-6">
-                <div ref={qrRef}>
-                  {config.gradient.enabled ? (
-                    <QRPreviewStylized config={config} />
-                  ) : (
-                    <QRPreview config={config} />
-                  )}
-                </div>
+                {qrPreview}
               </div>
 
               <DownloadButton
