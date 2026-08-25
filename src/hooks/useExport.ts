@@ -1,12 +1,10 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import { QRConfig } from '@/types';
 import QRCodeStyling from 'qr-code-styling';
 
 export function useExport(config: QRConfig, onToast: (message: string, type: 'success' | 'error') => void) {
-  const qrRef = useRef<HTMLDivElement>(null);
-
   const getStylizedQR = useCallback(() => {
     const dotStyleMap = { square: 'square', rounded: 'rounded', dots: 'dots', diamond: 'extra-rounded' } as const;
     const cornerStyleMap = { square: 'square', rounded: 'extra-rounded', dots: 'dot' } as const;
@@ -106,7 +104,6 @@ export function useExport(config: QRConfig, onToast: (message: string, type: 'su
   }, [getStylizedQR, onToast]);
 
   return {
-    qrRef,
     downloadPNG,
     downloadSVG,
     copyToClipboard,

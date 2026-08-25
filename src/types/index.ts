@@ -6,8 +6,6 @@ export type CornerStyle = 'square' | 'rounded' | 'dots';
 
 export type ErrorCorrection = 'L' | 'M' | 'Q' | 'H';
 
-export type ToastType = 'success' | 'error' | 'info';
-
 export interface QRConfig {
   content: string;
   type: QRType;
@@ -28,12 +26,6 @@ export interface GradientConfig {
   color1: string;
   color2: string;
   rotation: number;
-}
-
-export interface Toast {
-  id: string;
-  message: string;
-  type: ToastType;
 }
 
 export interface QRTypeOption {

@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
@@ -56,6 +57,7 @@ export default function GradientPicker({ gradient, onGradientChange }: GradientP
                   type="color"
                   value={gradient.color1}
                   onChange={(e) => update({ color1: e.target.value })}
+                  aria-label="Gradient color 1"
                   className="h-8 w-8 cursor-pointer rounded border-0"
                 />
                 <Input
@@ -72,6 +74,7 @@ export default function GradientPicker({ gradient, onGradientChange }: GradientP
                   type="color"
                   value={gradient.color2}
                   onChange={(e) => update({ color2: e.target.value })}
+                  aria-label="Gradient color 2"
                   className="h-8 w-8 cursor-pointer rounded border-0"
                 />
                 <Input
@@ -108,8 +111,4 @@ export default function GradientPicker({ gradient, onGradientChange }: GradientP
       )}
     </div>
   );
-}
-
-function Button({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: string; size?: string }) {
-  return <button {...props}>{children}</button>;
 }

@@ -102,30 +102,3 @@ export function getInitialFields(type: QRType): Record<string, string> {
       return { content: '' };
   }
 }
-
-export function getPlaceholder(type: QRType): string {
-  switch (type) {
-    case 'url':
-      return 'https://example.com';
-    case 'text':
-      return 'Enter your text here...';
-    case 'wifi':
-      return 'Network name';
-    case 'vcard':
-      return 'John Doe';
-    case 'email':
-      return 'email@example.com';
-    case 'sms':
-      return '+1 234 567 8900';
-    case 'phone':
-      return '+1 234 567 8900';
-    case 'whatsapp':
-      return '+1 234 567 8900';
-    case 'calendar':
-      return 'Event name';
-    case 'location':
-      return '40.7128';
-    default:
-      return 'Enter content...';
-  }
-}

@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/button';
 import { QRConfig } from '@/types';
-import { SIZE_OPTIONS, ERROR_CORRECTION_OPTIONS } from '@/lib/constants';
 
 interface DownloadButtonProps {
   config: QRConfig;

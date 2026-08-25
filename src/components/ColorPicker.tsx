@@ -50,6 +50,7 @@ export default function ColorPicker({
               type="color"
               value={foreground}
               onChange={(e) => onForegroundChange(e.target.value)}
+              aria-label="Foreground color"
               className="h-8 w-8 cursor-pointer rounded border-0"
             />
             <Input
@@ -73,6 +74,7 @@ export default function ColorPicker({
               type="color"
               value={background}
               onChange={(e) => onBackgroundChange(e.target.value)}
+              aria-label="Background color"
               className="h-8 w-8 cursor-pointer rounded border-0"
             />
             <Input

@@ -160,3 +160,13 @@ input[type="color"]::-webkit-color-swatch {
     @apply font-sans;
   }
 }
+
+/* QR Scanner scan line animation */
+@keyframes scan-line {
+  0% { top: 0; }
+  100% { top: calc(100% - 2px); }
+}
+
+.scan-line {
+  animation: scan-line 2s linear infinite;
+}

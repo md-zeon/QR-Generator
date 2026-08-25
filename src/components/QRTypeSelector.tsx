@@ -31,6 +31,7 @@ export default function QRTypeSelector({ value, onChange }: QRTypeSelectorProps)
             key={type.id}
             onClick={() => onChange(type.id)}
             type="button"
+            aria-pressed={value === type.id}
             className={`flex flex-col items-center gap-1 rounded-lg border p-2.5 text-center transition-all ${
               value === type.id
                 ? 'border-primary bg-primary/5 text-primary ring-1 ring-primary/20'

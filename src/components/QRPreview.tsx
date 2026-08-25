@@ -23,7 +23,7 @@ export default function QRPreview({ config }: QRPreviewProps) {
           value={displayValue}
           size={previewSize}
           bgColor={config.background}
-          fgColor={hasContent ? config.foreground : '#d4d4d8'}
+          fgColor={hasContent ? config.foreground : 'oklch(0.5 0 0)'}
           level={config.errorCorrection}
           includeMargin={false}
           aria-label={hasContent ? `QR code for: ${config.content}` : 'QR code preview'}
