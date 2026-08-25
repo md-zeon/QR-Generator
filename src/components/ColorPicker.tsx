@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { getContrastRatio, getContrastRating } from '@/lib/contrast';
 import { PRESET_COLORS } from '@/lib/constants';
+import { useState, useEffect } from 'react';
 
 interface ContrastRating {
   level: 'AAA' | 'AA' | 'Fail';
@@ -41,61 +41,61 @@ export default function ColorPicker({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-end gap-3">
-        <div className="flex-1 space-y-2">
-          <Label>Foreground</Label>
-          <div className="flex items-center gap-2">
+    <div className="space-y-3">
+      <div className="flex items-end gap-2">
+        <div className="flex-1 space-y-1.5">
+          <Label className="text-xs">Foreground</Label>
+          <div className="flex items-center gap-1.5">
             <input
               type="color"
               value={foreground}
               onChange={(e) => onForegroundChange(e.target.value)}
-              className="h-9 w-9 cursor-pointer rounded-md border-0"
+              className="h-8 w-8 cursor-pointer rounded border-0"
             />
             <Input
               value={foreground}
               onChange={(e) => onForegroundChange(e.target.value)}
-              className="font-mono uppercase"
+              className="h-8 font-mono text-xs uppercase"
             />
           </div>
         </div>
 
-        <Button variant="outline" size="icon" onClick={handleSwap} className="mb-0.5">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+        <Button variant="ghost" size="icon" onClick={handleSwap} className="h-8 w-8 shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
             <path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
           </svg>
         </Button>
 
-        <div className="flex-1 space-y-2">
-          <Label>Background</Label>
-          <div className="flex items-center gap-2">
+        <div className="flex-1 space-y-1.5">
+          <Label className="text-xs">Background</Label>
+          <div className="flex items-center gap-1.5">
             <input
               type="color"
               value={background}
               onChange={(e) => onBackgroundChange(e.target.value)}
-              className="h-9 w-9 cursor-pointer rounded-md border-0"
+              className="h-8 w-8 cursor-pointer rounded border-0"
             />
             <Input
               value={background}
               onChange={(e) => onBackgroundChange(e.target.value)}
-              className="font-mono uppercase"
+              className="h-8 font-mono text-xs uppercase"
             />
           </div>
         </div>
       </div>
 
-      {/* Contrast Ratio Display */}
+      {/* Contrast Ratio */}
       <Badge
         variant={contrastRating.level === 'Fail' ? 'destructive' : 'secondary'}
-        className="w-full justify-center py-1.5"
+        className="w-full justify-center py-1 text-xs"
       >
         Contrast: {contrastRatio.toFixed(1)}:1 — {contrastRating.level}
       </Badge>
 
-      {/* Preset Colors */}
-      <div className="space-y-2">
-        <Label>Color Presets</Label>
-        <div className="flex flex-wrap gap-2">
+      {/* Color Presets */}
+      <div className="space-y-1.5">
+        <Label className="text-xs">Quick Presets</Label>
+        <div className="flex flex-wrap gap-1.5">
           {PRESET_COLORS.map((preset) => (
             <Button
               key={preset.label}
@@ -105,10 +105,10 @@ export default function ColorPicker({
                 onForegroundChange(preset.foreground);
                 onBackgroundChange(preset.background);
               }}
-              className="gap-1.5"
+              className="h-7 gap-1 px-2 text-xs"
             >
-              <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: preset.foreground }} />
-              <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: preset.background }} />
+              <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: preset.foreground }} />
+              <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: preset.background }} />
               {preset.label}
             </Button>
           ))}

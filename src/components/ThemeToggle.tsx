@@ -2,14 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 
 type Theme = 'light' | 'dark';
 
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>('dark');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const stored = localStorage.getItem('theme') as Theme | null;
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     const initial = stored || systemTheme;
@@ -26,15 +27,19 @@ export default function ThemeToggle() {
     document.documentElement.classList.toggle('light', newTheme === 'light');
   };
 
+  if (!mounted) {
+    return <div className="h-8 w-8" />;
+  }
+
   return (
-    <div className="flex items-center gap-2">
-      <Label htmlFor="theme-toggle" className="text-muted-foreground">
+    <div className="flex items-center gap-1.5">
+      <span className="text-xs text-muted-foreground">
         {theme === 'dark' ? '🌙' : '☀️'}
-      </Label>
+      </span>
       <Switch
-        id="theme-toggle"
         checked={theme === 'dark'}
         onCheckedChange={toggleTheme}
+        aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
       />
     </div>
   );

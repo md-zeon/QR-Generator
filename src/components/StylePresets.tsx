@@ -10,7 +10,7 @@ interface StylePresetsProps {
 
 export default function StylePresets({ onApply }: StylePresetsProps) {
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-3 gap-1.5">
       {STYLE_PRESETS.map((preset) => (
         <Button
           key={preset.label}
@@ -36,23 +36,20 @@ export default function StylePresets({ onApply }: StylePresetsProps) {
             }
             onApply(updates);
           }}
-          className="flex-col gap-1 h-auto py-3"
+          className="flex-col gap-0.5 h-auto py-2"
         >
           <div
-            className="flex h-8 w-full items-center justify-center rounded-md"
+            className="flex h-6 w-full items-center justify-center rounded"
             style={{ backgroundColor: preset.background }}
           >
-            <svg viewBox="0 0 24 24" className="h-5 w-5" style={{ color: preset.foreground }}>
+            <svg viewBox="0 0 24 24" className="h-4 w-4" style={{ color: preset.foreground }}>
               <rect x="2" y="2" width="6" height="6" fill="currentColor" rx={preset.dotStyle === 'rounded' ? 1.5 : 0} />
               <rect x="16" y="2" width="6" height="6" fill="currentColor" rx={preset.dotStyle === 'rounded' ? 1.5 : 0} />
               <rect x="2" y="16" width="6" height="6" fill="currentColor" rx={preset.dotStyle === 'rounded' ? 1.5 : 0} />
               <rect x="10" y="10" width="4" height="4" fill="currentColor" rx={preset.dotStyle === 'rounded' ? 1 : 0} />
             </svg>
           </div>
-          <span className="text-xs font-medium">{preset.label}</span>
-          <span className="text-[10px] text-muted-foreground">
-            {preset.dotStyle} • {preset.cornerStyle}
-          </span>
+          <span className="text-[10px] font-medium">{preset.label}</span>
         </Button>
       ))}
     </div>

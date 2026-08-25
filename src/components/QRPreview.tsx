@@ -2,7 +2,6 @@
 
 import { QRCodeSVG } from 'qrcode.react';
 import { QRConfig } from '@/types';
-import { Card } from '@/components/ui/card';
 
 interface QRPreviewProps {
   config: QRConfig;
@@ -10,13 +9,17 @@ interface QRPreviewProps {
 
 export default function QRPreview({ config }: QRPreviewProps) {
   const hasLogo = config.logo && config.logoSize > 0;
+  const previewSize = Math.min(config.size, 320);
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <Card className="relative flex items-center justify-center p-8">
+    <div className="flex flex-col items-center gap-3">
+      <div
+        className="relative flex items-center justify-center rounded-xl p-6"
+        style={{ backgroundColor: config.background }}
+      >
         <QRCodeSVG
           value={config.content || ' '}
-          size={config.size}
+          size={previewSize}
           bgColor={config.background}
           fgColor={config.foreground}
           level={config.errorCorrection}
@@ -27,10 +30,11 @@ export default function QRPreview({ config }: QRPreviewProps) {
 
         {hasLogo && (
           <div
-            className="absolute flex items-center justify-center rounded-full bg-white"
+            className="absolute flex items-center justify-center rounded-full"
             style={{
-              width: `${config.size * (config.logoSize / 100)}px`,
-              height: `${config.size * (config.logoSize / 100)}px`,
+              width: `${previewSize * (config.logoSize / 100)}px`,
+              height: `${previewSize * (config.logoSize / 100)}px`,
+              backgroundColor: config.background,
             }}
           >
             <img
@@ -40,11 +44,13 @@ export default function QRPreview({ config }: QRPreviewProps) {
             />
           </div>
         )}
-      </Card>
+      </div>
 
-      <p className="text-sm text-muted-foreground">
-        {config.size} × {config.size}px • EC: {config.errorCorrection}
-      </p>
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <span>{config.size} × {config.size}px</span>
+        <span className="text-border">•</span>
+        <span>EC: {config.errorCorrection}</span>
+      </div>
     </div>
   );
 }

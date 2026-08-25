@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { QRConfig } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
 interface HistoryItem {
@@ -80,43 +80,36 @@ export default function HistoryPanel({ history, onSelect, onRemove, onClear }: H
   };
 
   return (
-    <Card className="p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-medium">Recent QR Codes</h3>
-        <Button variant="ghost" size="sm" onClick={onClear}>
-          Clear all
-        </Button>
-      </div>
-      <div className="space-y-2">
-        {history.map((item, index) => (
-          <div key={item.id}>
-            <div className="flex items-center gap-3 rounded-md p-2 transition-colors hover:bg-muted">
+    <Card>
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm">Recent</CardTitle>
+          <Button variant="ghost" size="sm" onClick={onClear} className="h-6 text-xs text-muted-foreground">
+            Clear
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <div className="space-y-1">
+          {history.map((item, index) => (
+            <div key={item.id}>
               <button
                 onClick={() => onSelect(item.config)}
-                className="flex-1 text-left"
+                className="flex w-full items-center gap-2 rounded-md p-1.5 text-left transition-colors hover:bg-muted"
               >
-                <p className="truncate text-sm font-medium">
-                  {item.config.content.slice(0, 50)}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {item.config.type.toUpperCase()} • {formatTime(item.timestamp)}
-                </p>
+                <span className="text-xs">{item.config.type.toUpperCase()}</span>
+                <span className="flex-1 truncate text-xs text-muted-foreground">
+                  {item.config.content.slice(0, 40)}
+                </span>
+                <span className="text-[10px] text-muted-foreground">
+                  {formatTime(item.timestamp)}
+                </span>
               </button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onRemove(item.id)}
-                className="h-6 w-6"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-              </Button>
+              {index < history.length - 1 && <Separator className="my-0.5" />}
             </div>
-            {index < history.length - 1 && <Separator className="my-1" />}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </CardContent>
     </Card>
   );
 }

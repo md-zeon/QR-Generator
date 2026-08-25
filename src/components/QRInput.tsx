@@ -23,15 +23,30 @@ export default function QRInput({ type, fields, onFieldChange, errors = {} }: QR
   const renderFields = () => {
     switch (type) {
       case 'url':
+        return (
+          <div className="space-y-2">
+            <Label htmlFor="content">URL</Label>
+            <Input
+              id="content"
+              value={fields.content || ''}
+              onChange={(e) => onFieldChange('content', e.target.value)}
+              placeholder="https://example.com"
+              className={errors.content ? 'border-destructive' : ''}
+              aria-invalid={!!errors.content}
+            />
+            {renderError('content')}
+          </div>
+        );
+
       case 'text':
         return (
           <div className="space-y-2">
-            <Label htmlFor="content">{type === 'url' ? 'URL' : 'Text'}</Label>
+            <Label htmlFor="content">Text</Label>
             <Textarea
               id="content"
               value={fields.content || ''}
               onChange={(e) => onFieldChange('content', e.target.value)}
-              placeholder={type === 'url' ? 'https://example.com' : 'Enter your text here...'}
+              placeholder="Enter your text here..."
               className={errors.content ? 'border-destructive' : ''}
               aria-invalid={!!errors.content}
             />

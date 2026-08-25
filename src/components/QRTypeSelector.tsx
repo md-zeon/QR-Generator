@@ -12,11 +12,11 @@ interface QRTypeSelectorProps {
 export default function QRTypeSelector({ value, onChange }: QRTypeSelectorProps) {
   return (
     <Tabs value={value} onValueChange={(v) => onChange(v as QRType)}>
-      <TabsList className="flex w-full flex-wrap gap-1">
+      <TabsList className="w-full justify-start overflow-x-auto">
         {QR_TYPES.map((type) => (
-          <TabsTrigger key={type.id} value={type.id} className="gap-1.5">
-            <span>{type.icon}</span>
-            <span className="hidden sm:inline">{type.label}</span>
+          <TabsTrigger key={type.id} value={type.id} className="gap-1.5 px-3">
+            <span className="text-sm">{type.icon}</span>
+            <span>{type.label}</span>
           </TabsTrigger>
         ))}
       </TabsList>

@@ -4,7 +4,6 @@ import { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
-import { Card } from '@/components/ui/card';
 
 interface LogoUploaderProps {
   logo: string | null;
@@ -40,9 +39,9 @@ export default function LogoUploader({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <Label>Logo Image</Label>
+    <div className="space-y-3">
+      <div className="space-y-1.5">
+        <Label className="text-xs">Logo Image</Label>
         <div className="flex items-center gap-2">
           <input
             ref={fileInputRef}
@@ -55,11 +54,12 @@ export default function LogoUploader({
             variant="outline"
             size="sm"
             onClick={() => fileInputRef.current?.click()}
+            className="h-8"
           >
             Choose File
           </Button>
           {logo && (
-            <Button variant="ghost" size="sm" onClick={() => onLogoChange(null)}>
+            <Button variant="ghost" size="sm" onClick={() => onLogoChange(null)} className="h-8 text-destructive">
               Remove
             </Button>
           )}
@@ -67,18 +67,18 @@ export default function LogoUploader({
       </div>
 
       {logo && (
-        <Card className="flex items-center justify-center p-4">
+        <div className="flex items-center justify-center rounded-md border bg-muted/30 p-3">
           <img
             src={logo}
             alt="Logo preview"
-            className="max-h-16 w-auto object-contain"
+            className="max-h-12 w-auto object-contain"
           />
-        </Card>
+        </div>
       )}
 
       {logo && (
-        <div className="space-y-2">
-          <Label>Logo Size: {logoSize}%</Label>
+        <div className="space-y-1.5">
+          <Label className="text-xs">Logo Size: {logoSize}%</Label>
           <Slider
             value={[logoSize]}
             onValueChange={(value) => onLogoSizeChange(Array.isArray(value) ? value[0] : value)}

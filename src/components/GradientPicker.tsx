@@ -4,7 +4,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
 import { GradientConfig } from '@/types';
 
 interface GradientPickerProps {
@@ -18,10 +17,9 @@ export default function GradientPicker({ gradient, onGradientChange }: GradientP
   };
 
   return (
-    <div className="space-y-4">
-      {/* Enable/Disable */}
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <Label htmlFor="gradient-toggle">Enable Gradient</Label>
+        <Label htmlFor="gradient-toggle" className="text-xs">Enable Gradient</Label>
         <Switch
           id="gradient-toggle"
           checked={gradient.enabled}
@@ -31,67 +29,63 @@ export default function GradientPicker({ gradient, onGradientChange }: GradientP
 
       {gradient.enabled && (
         <>
-          {/* Gradient Type */}
-          <div className="space-y-2">
-            <Label>Type</Label>
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                variant={gradient.type === 'linear' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => update({ type: 'linear' })}
-              >
-                Linear
-              </Button>
-              <Button
-                variant={gradient.type === 'radial' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => update({ type: 'radial' })}
-              >
-                Radial
-              </Button>
-            </div>
+          <div className="flex gap-1.5">
+            <Button
+              variant={gradient.type === 'linear' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => update({ type: 'linear' })}
+              className="flex-1"
+            >
+              Linear
+            </Button>
+            <Button
+              variant={gradient.type === 'radial' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => update({ type: 'radial' })}
+              className="flex-1"
+            >
+              Radial
+            </Button>
           </div>
 
-          {/* Colors */}
-          <div className="flex items-end gap-3">
-            <div className="flex-1 space-y-2">
-              <Label>Color 1</Label>
-              <div className="flex items-center gap-2">
+          <div className="flex items-end gap-2">
+            <div className="flex-1 space-y-1.5">
+              <Label className="text-xs">Color 1</Label>
+              <div className="flex items-center gap-1.5">
                 <input
                   type="color"
                   value={gradient.color1}
                   onChange={(e) => update({ color1: e.target.value })}
-                  className="h-9 w-9 cursor-pointer rounded-md border-0"
+                  className="h-8 w-8 cursor-pointer rounded border-0"
                 />
                 <Input
                   value={gradient.color1}
                   onChange={(e) => update({ color1: e.target.value })}
-                  className="font-mono uppercase"
+                  className="h-8 font-mono text-xs uppercase"
                 />
               </div>
             </div>
-            <div className="flex-1 space-y-2">
-              <Label>Color 2</Label>
-              <div className="flex items-center gap-2">
+            <div className="flex-1 space-y-1.5">
+              <Label className="text-xs">Color 2</Label>
+              <div className="flex items-center gap-1.5">
                 <input
                   type="color"
                   value={gradient.color2}
                   onChange={(e) => update({ color2: e.target.value })}
-                  className="h-9 w-9 cursor-pointer rounded-md border-0"
+                  className="h-8 w-8 cursor-pointer rounded border-0"
                 />
                 <Input
                   value={gradient.color2}
                   onChange={(e) => update({ color2: e.target.value })}
-                  className="font-mono uppercase"
+                  className="h-8 font-mono text-xs uppercase"
                 />
               </div>
             </div>
           </div>
 
-          {/* Rotation (linear only) */}
           {gradient.type === 'linear' && (
-            <div className="space-y-2">
-              <Label>Rotation: {gradient.rotation}°</Label>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Rotation: {gradient.rotation}°</Label>
               <Slider
                 value={[gradient.rotation]}
                 onValueChange={(value) => update({ rotation: Array.isArray(value) ? value[0] : value })}
@@ -101,9 +95,8 @@ export default function GradientPicker({ gradient, onGradientChange }: GradientP
             </div>
           )}
 
-          {/* Preview */}
           <div
-            className="h-8 rounded-md border"
+            className="h-6 rounded-md border"
             style={{
               background:
                 gradient.type === 'linear'
@@ -115,4 +108,8 @@ export default function GradientPicker({ gradient, onGradientChange }: GradientP
       )}
     </div>
   );
+}
+
+function Button({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: string; size?: string }) {
+  return <button {...props}>{children}</button>;
 }

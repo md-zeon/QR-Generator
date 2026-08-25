@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import QRCodeStyling from 'qr-code-styling';
 import { QRConfig } from '@/types';
-import { Card } from '@/components/ui/card';
 
 interface QRPreviewStylizedProps {
   config: QRConfig;
@@ -29,9 +28,11 @@ export default function QRPreviewStylized({ config }: QRPreviewStylizedProps) {
       dots: 'dot',
     } as const;
 
+    const previewSize = Math.min(config.size, 320);
+
     const qr = new QRCodeStyling({
-      width: config.size,
-      height: config.size,
+      width: previewSize,
+      height: previewSize,
       data: config.content || ' ',
       margin: 0,
       qrOptions: {
@@ -123,14 +124,21 @@ export default function QRPreviewStylized({ config }: QRPreviewStylizedProps) {
   }
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <Card className="relative flex items-center justify-center p-8">
+    <div className="flex flex-col items-center gap-3">
+      <div
+        className="flex items-center justify-center rounded-xl p-6"
+        style={{ backgroundColor: config.background }}
+      >
         <div ref={containerRef} />
-      </Card>
+      </div>
 
-      <p className="text-sm text-muted-foreground">
-        {config.size} × {config.size}px • EC: {config.errorCorrection} • Gradient
-      </p>
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <span>{config.size} × {config.size}px</span>
+        <span className="text-border">•</span>
+        <span>EC: {config.errorCorrection}</span>
+        <span className="text-border">•</span>
+        <span className="text-primary">Gradient</span>
+      </div>
     </div>
   );
 }
